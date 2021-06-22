@@ -1,4 +1,4 @@
 set DBHOST=localhost
 set DBUSER=manager
-set DBNAME=pollsdb
+set DBNAME=festessendb202107
 set DBPASS=supersecretpass
