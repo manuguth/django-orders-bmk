@@ -18,10 +18,10 @@ from products.models import Product
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 import locale
-try:
-    locale.setlocale(locale.LC_ALL, 'de_DE')
-except:
-    print("FAILED")
+# try:
+#     locale.setlocale(locale.LC_ALL, 'de_DE')
+# except:
+#     print("FAILED")
 
 
 

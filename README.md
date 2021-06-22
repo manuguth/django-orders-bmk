@@ -10,3 +10,8 @@
 ### PostSQL
 - Servername: bmk-bestellung-db
 - databasename: festessendb202107
+
+
+
+### Startup
+`echo de_DE ISO-8859-1 >> /etc/locale.gen && locale-gen`

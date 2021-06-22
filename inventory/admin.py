@@ -4,10 +4,10 @@ from django.utils import timezone
 import locale
 from .models import Inventory
 
-try:
-    locale.setlocale(locale.LC_ALL, 'de_DE')
-except:
-    print("FAILED")
+# try:
+#     locale.setlocale(locale.LC_ALL, 'de_DE')
+# except:
+#     print("FAILED")
 
 class InventoryAdmin(admin.ModelAdmin):
     def time_days(self, obj):
