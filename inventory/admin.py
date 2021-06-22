@@ -4,7 +4,7 @@ from django.utils import timezone
 import locale
 from .models import Inventory
 
-# locale.setlocale(locale.LC_ALL, 'de_DE')
+locale.setlocale(locale.LC_ALL, 'de_DE')
 
 class InventoryAdmin(admin.ModelAdmin):
     def time_days(self, obj):
