@@ -1,0 +1,6 @@
+_bak/*
+bin/*
+lib/*
+db.sqlite3
+*.cfg
+*.pyc
