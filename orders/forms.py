@@ -6,7 +6,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 from django.utils import timezone
 import locale
-locale.setlocale(locale.LC_ALL, 'de_DE')
+try:
+    locale.setlocale(locale.LC_ALL, 'de_DE')
+except:
+    print("FAILED")
+
 
 
 class OrderModelForm(forms.Form):
