@@ -9,7 +9,7 @@ def main():
        # If WEBSITE_HOSTNAME is defined as an environment variable, then we're running
     # on Azure App Service and should use the production settings.
     settings_module = "bmk_orders_togo.production" if 'WEBSITE_HOSTNAME' in os.environ else 'bmk_orders_togo.settings'
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bmk_orders_togo.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
