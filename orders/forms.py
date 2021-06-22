@@ -12,21 +12,7 @@ locale.setlocale(locale.LC_ALL, 'de_DE')
 class OrderModelForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.helper = FormHelper()
-        # self.helper.layout = Layout(
-        #     Fieldset(
-        #         'Zum Abschluss benötigen wir noch Ihre Kontaktdaten',
-        #         "name",
-        #         "email",
-        #         "phone",
-        #         "comments",
-        #         "check_me_out",
-        #     ),
-        #     ButtonHolder(
-        #         Submit('submit', 'Weiter', css_class='button white')
-        #     )
-        # )
-    
+          
     name = forms.CharField(max_length=220,
                             label='Name',
                             widget=forms.TextInput(attrs={'placeholder': 'Bitte tragen Sie ihren Namen hier ein.'}))
@@ -54,16 +40,6 @@ class OrderProductForm(forms.Form):
         field_names = [i[0] for i in fields]
         field_ids = [i[2] for i in fields]
         
-        # self.helper = FormHelper()
-        # self.helper.layout = Layout(
-        #     Fieldset(
-        #         'Hier können Sie ihre Bestellung aufgeben',
-        #         *fields
-        #     ),
-        #     ButtonHolder(
-        #         Submit('submit', 'Weiter', css_class='button white')
-        #     )
-        # )
         for i in range(len(qs)):
             entry = Product.objects.get(id=field_ids[i])
             field_name = entry.short_title
@@ -87,17 +63,6 @@ class OrderTimeSlotForm(forms.Form):
             ('', 'Wählen Sie Ihre Abholzeit...'),
             *slots
         )
-        
-        # self.helper = FormHelper()
-        # self.helper.layout = Layout(
-        #     Fieldset(
-        #         'Abholzeit',
-        #         "time_slot",
-        #     ),
-        #     ButtonHolder(
-        #         Submit('submit', 'Weiter', css_class='button white')
-        #     )
-        # )
 
         self.fields["time_slot"] = forms.ChoiceField(choices=STATES, label="Abholzeit",
                                                      help_text="Bitte wählen Sie eine der oben angegebenen Abholzeiten aus. (Damit wir Ihre Bestellung bestmöglich vorbereiten können, können wir nur eine limitierte Anzahl an Bestellungen pro Abholzeit annehmen.) ")

@@ -24,13 +24,6 @@ from orders.views import(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('personal_details/', CrispyAddressFormView, name='personal_details'),
-    # path('order/', OrderProductView, name='order'),
-    # path('personal_details/',
-    #      CrispyAddressFormView.as_view(
-    #          template_name='orders/personal_details.html'),
-    #      name='form_2'),
     path('bestellung/', OrderWizard.as_view()),
-    # path('time_slot/', OrderTimeSlotView, name='time_slot'),
     path('success/', SuccessView.as_view(), name='success'),
 ]

@@ -89,53 +89,6 @@ class OrderWizard(SessionWizardView):
         })
     
 
-
-# def CrispyAddressFormView(request):
-#     form = OrderModelForm(request.POST or None)
-#     if request.method == 'POST':
-#         form = OrderModelForm(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             #now in the object cd, you have the form as a dictionary.
-#             a = cd.get('a')
-#             print(cd)
-#     # if form.is_valid():
-#     #     # obj = form.save(commit=False)
-#     #     form.save()
-#     #     form = OrderModelForm()
-#         # return render(request, "orders/success.html")    
-#     return render(request, "orders/personal_details.html", {'form': form})
-   
-
-# def OrderProductView(request):
-#     form = OrderProductForm()
-#     if request.method == 'POST':
-#         form = OrderProductForm(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             #now in the object cd, you have the form as a dictionary.
-#             a = cd.get('a')
-#             print(cd)
-#     return render(request, "orders/personal_details.html", {'form': form})
-
-
-# def OrderTimeSlotView(request):
-#     form = OrderTimeSlotForm()
-#     if request.method == 'POST':
-#         form = OrderTimeSlotForm(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             #now in the object cd, you have the form as a dictionary.
-#             a = cd.get('a')
-#             print(cd)
-#     return render(request, "orders/personal_details.html", {'form': form})
-
-# # class CrispyAddressFormView(FormView):
-# #     form_class = OrderModelForm
-# #     success_url = reverse_lazy('success')
-# #     template_name = 'orders/crispy_form.html'
-    
-
 class SuccessView(TemplateView):
     template_name = 'orders/success.html'
 
