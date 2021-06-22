@@ -25,6 +25,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # DBHOST is only the server name, not the full URL
 hostname = os.environ['DBHOST']
 
+SECRET_KEY = os.environ['SECRET_KEY']
+DEBUG = False
+
 # Configure Postgres database; the full username is username@servername,
 # which we construct using the DBHOST value.
 DATABASES = {

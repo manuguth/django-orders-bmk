@@ -24,6 +24,7 @@ from orders.views import(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', OrderWizard.as_view()),
     path('bestellung/', OrderWizard.as_view()),
     path('success/', SuccessView.as_view(), name='success'),
 ]
