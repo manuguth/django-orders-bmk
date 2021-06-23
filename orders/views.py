@@ -24,8 +24,8 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 import locale
 
-# if 'WEBSITE_HOSTNAME' not in os.environ:
-locale.setlocale(locale.LC_ALL, 'de_DE')
+if 'WEBSITE_HOSTNAME' not in os.environ:
+    locale.setlocale(locale.LC_ALL, 'de_DE')
 # elif 'WEBSITE_HOSTNAME' in os.environ:
 #     bashCommand = "echo 'de_DE ISO-8859-1' >> /etc/locale.gen && locale-gen"
 #     process = subprocess.call(bashCommand.split(), stdout=subprocess.PIPE)
