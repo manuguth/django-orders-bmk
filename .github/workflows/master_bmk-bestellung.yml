@@ -26,6 +26,8 @@ jobs:
       run: |
         python -m venv venv
         source venv/bin/activate
+        sudo locale-gen de_DE.UTF-8
+        python -c "import locale; locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')"
 
     - name: Install dependencies
       run: pip install -r requirements.txt
