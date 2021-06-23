@@ -128,3 +128,4 @@ lib/*
 db.sqlite3
 *.cfg
 *.pyc
+env.sh
