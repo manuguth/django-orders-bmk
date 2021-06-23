@@ -61,6 +61,8 @@ def getproductoverview(form_product_data):
     return products
     
 
+def sendmail(order_data):
+    a = 0
 
 class OrderWizard(SessionWizardView):
     form_list = FORMS
