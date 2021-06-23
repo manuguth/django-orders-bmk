@@ -1,0 +1,1 @@
+echo de_DE ISO-8859-1 >> /etc/locale.gen && locale-gen

@@ -3,11 +3,15 @@ from django.utils import timezone
 # Register your models here.
 import locale
 from .models import Inventory
+import subprocess
 
-# try:
-#     locale.setlocale(locale.LC_ALL, 'de_DE')
-# except:
-#     print("FAILED")
+
+try:
+    locale.setlocale(locale.LC_ALL, 'de_DE')
+except Exception:
+    bashCommand = "echo 'de_DE ISO-8859-1' >> /etc/locale.gen && locale-gen"
+    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+    locale.setlocale(locale.LC_ALL, 'de_DE')
 
 class InventoryAdmin(admin.ModelAdmin):
     def time_days(self, obj):
