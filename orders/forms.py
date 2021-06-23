@@ -1,3 +1,5 @@
+import os
+import subprocess
 from .models import Order
 from django import forms
 from inventory.models import Inventory
@@ -7,12 +9,11 @@ from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 import locale
-try:
-    locale.setlocale(locale.LC_ALL, 'de_DE')
-except Exception:
+
+if 'WEBSITE_HOSTNAME' in os.environ:
     bashCommand = "echo 'de_DE ISO-8859-1' >> /etc/locale.gen && locale-gen"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-    locale.setlocale(locale.LC_ALL, 'de_DE')
+locale.setlocale(locale.LC_ALL, 'de_DE')
 
 def boldlabel(label):
     return mark_safe(f"<strong>{label}</strong>")

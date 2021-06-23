@@ -1,3 +1,5 @@
+import os
+import subprocess
 from django.db import connection
 from django.shortcuts import render
 
@@ -21,13 +23,11 @@ from products.models import Product
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 import locale
-try:
-    locale.setlocale(locale.LC_ALL, 'de_DE')
-except Exception:
+
+if 'WEBSITE_HOSTNAME' in os.environ:
     bashCommand = "echo 'de_DE ISO-8859-1' >> /etc/locale.gen && locale-gen"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-    locale.setlocale(locale.LC_ALL, 'de_DE')
-
+locale.setlocale(locale.LC_ALL, 'de_DE')
 
 
 FORMS = [("productchoice", OrderProductForm),
