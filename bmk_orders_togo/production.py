@@ -1,6 +1,9 @@
 from .settings import *
 import os
 
+# setting admins
+ADMINS = [('Manuel', 'bestellung@bmk-buggingen.de')]
+
 # Configure the domain name using the environment variable
 # that Azure automatically creates for us.
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME'], "127.0.0.1"

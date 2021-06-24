@@ -148,7 +148,6 @@ EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 MAILER_LIST = ["bestellung@bmk-buggingen.de"]
 DEFAULT_FROM_EMAIL = "bestellung@bmk-buggingen.de"
 
-ADMINS = [('Manuel', 'bestellung@bmk-buggingen.de')]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
