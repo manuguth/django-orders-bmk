@@ -1,5 +1,5 @@
 import os
-import subprocess
+import secrets
 from django.db import connection
 from django.shortcuts import render
 
@@ -17,8 +17,10 @@ from .forms import(
     OrderTimeSlotForm,
     OrderCheckoutForm,
     )
+from .models import Order
 
 from products.models import Product
+from inventory.models import Inventory
 
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -42,13 +44,17 @@ TEMPLATES = {"productchoice": "orders/formtools.html",
              "confirmation": "orders/confirmation_formtools.html"}
 
 
-def calculateprice(form_product_data):
+def calculateprice(form_product_data, n_products=False):
     price = 0
+    products = 0
     for item in form_product_data:
         if form_product_data[item] is None:
             continue
         price += form_product_data[item] * Product.objects.get(short_title=item).price
+        products += form_product_data[item]
     
+    if n_products:
+        return price, products
     return price
 
 
@@ -109,23 +115,46 @@ class OrderWizard(SessionWizardView):
             timeslot = class_date.strftime("%A %d. %B %H:%M")
             context.update(
                 {'price': price, "products": products, "timeslot": timeslot})
+        # if self.steps.current == 'timeslot':
+        #     price = calculateprice(
+        #         super().get_cleaned_data_for_step("productchoice"),
+        #         n_products=True
+        #         )
+            # TODO: find a way to check which timeslot is still available
         return context
     
     def done(self, form_list, **kwargs):
         print(form_list[0].cleaned_data)
         print([form.cleaned_data for form in form_list])
         personal_details = super().get_cleaned_data_for_step("personaldetails")
-        price = calculateprice(
-            super().get_cleaned_data_for_step("productchoice")
-        )
+        products = super().get_cleaned_data_for_step("productchoice")
+        price, n_ordered_products = calculateprice(products, n_products=True)
         class_date = timezone.localtime(
             parse_datetime(super().get_cleaned_data_for_step("timeslot")["time_slot"]))
         timeslot = class_date.strftime("%A %d. %B %H:%M")
         
         # TODO: write to database
+        # create a unique hash for each order
+        order_hash = secrets.token_urlsafe(16)
+        order = Order(
+            time_stamp=timezone.now(),
+            name=personal_details["name"],
+            email=personal_details["email"],
+            phone=personal_details["phone"],
+            comments=personal_details["comments"],
+            time_slot=class_date,
+            price_total=price,
+            ordered_products=products,
+            order_hash=order_hash,
+            n_ordered_products=n_ordered_products,
+        )
+        order.save()
         # retrieve order ID and set variable
-        order_id = 12
-        # TODO: augment amount of ordered food
+        order_id = order.id
+        # augmenting amount of ordered food
+        timeslot_db = Inventory.objects.get(time_slot=class_date)
+        timeslot_db.received_orders += n_ordered_products
+        timeslot_db.save()
         # TODO: check again if timeslot matches ordered food - probably not necessary
 
         
@@ -140,6 +169,7 @@ class OrderWizard(SessionWizardView):
         
         return render(self.request, 'orders/success.html', {
             'form_data': [form.cleaned_data for form in form_list],
+            'order_id': order_id
         })
     
 

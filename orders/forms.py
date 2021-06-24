@@ -80,14 +80,13 @@ class OrderTimeSlotForm(forms.Form):
 
     def GetTimeSlots(self, qs):
         # TODO: check also if the order doesn't exceed the order limit per time slot!!
-        # TODO: Order the choices
         slots = []
         for entry in qs:
             if entry.received_orders < entry.order_limit:
                 class_date = timezone.localtime(entry.time_slot)
                 slots.append(
                     (entry.time_slot, class_date.strftime("%A %d. %B %H:%M")))
-        return slots
+        return sorted(slots)
     
 
 class OrderCheckoutForm(forms.Form):

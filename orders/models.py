@@ -12,8 +12,11 @@ class Order(models.Model):
     phone = models.CharField(max_length=220)
     comments = models.CharField(max_length=220)
     time_slot = models.DateTimeField(max_length=220)
-    # time_stamp = models.DateTimeField(max_length=220)
+    price_total = models.FloatField()
     ordered_products = models.JSONField(default=dict)
+    n_ordered_products = models.IntegerField()
+    order_hash = models.CharField(max_length=200)
+    
     # ordered_products field
     # for sqlite only json Fields are possible
     # if using PostgreSQL, an ArrayField is available
@@ -30,34 +33,3 @@ class Order(models.Model):
     # the ordered_products
     # mail, phone, comments, time slot, time stamp,
     
-
-    def calculate(self, save=False):
-        if self.ordered_product != []:
-            return {}
-        total = 0
-        for item in self.ordered_products:
-            total += item['price']
-        subtotal = Decimal(self.product.price)  # 29.99 -> 2999
-        tax_rate = Decimal(0.12)  # 0.12 -> 12
-        tax_total = subtotal * tax_rate  # 1.29 1.2900000003
-        tax_total = Decimal("%.2f" % (tax_total))
-        total = subtotal + tax_total
-        total = Decimal("%.2f" % (total))
-        print(total)
-        totals = {
-            "subtotal": subtotal,
-            "tax": tax_total,
-            "total": total
-        }
-        for k, v in totals.items():
-            setattr(self, k, v)
-            if save == True:
-                self.save()
-        return totals
-
-
-# def order_pre_save(sender, instance, *args, **kwargs):
-#     instance.calculate(save=False)
-
-
-# pre_save.connect(order_pre_save, sender=Order)

@@ -1,3 +1,3 @@
 echo de_DE.UTF-8 UTF-8 >> /etc/locale.gen && locale-gen
 gunicorn --bind=0.0.0.0 --timeout 600 bmk_orders_togo.wsgi
-# oryx build /tmp/zipdeploy/extracted -o /home/site/wwwroot --platform python --platform-version 3.8 -i /tmp/8d9363af8c5d407 --compress-destination-dir -p virtualenv_name=antenv --log-file /tmp/build-debug.log
+# see documentation here https://docs.microsoft.com/en-us/azure/developer/python/tutorial-deploy-app-service-on-linux-04
