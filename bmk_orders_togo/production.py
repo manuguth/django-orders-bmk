@@ -26,7 +26,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 hostname = os.environ['DBHOST']
 
 SECRET_KEY = os.environ['SECRET_KEY']
-DEBUG = True
+DEBUG = False
 
 # Configure Postgres database; the full username is username@servername,
 # which we construct using the DBHOST value.
