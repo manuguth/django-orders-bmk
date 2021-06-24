@@ -32,7 +32,10 @@ jobs:
         pip install -r requirements.txt
    
     - name: Collect static
-      run: python manage.py collectstatic
+      run: |
+        echo de_DE.UTF-8 UTF-8 >> /etc/locale.gen && locale-gen
+        python manage.py collectstatic
+
     # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
     - name: Upload artifact for deployment jobs
