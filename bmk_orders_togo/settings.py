@@ -140,4 +140,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+MAILER_LIST = ["bestellung@bmk-buggingen.de"]
+DEFAULT_FROM_EMAIL = "bestellung@bmk-buggingen.de"
 
+ADMINS = [('Manuel', 'bestellung@bmk-buggingen.de')]
