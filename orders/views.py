@@ -97,6 +97,13 @@ Ihre Bergmannskapelle Buggingen e.V.
     )
     return email
 
+def generatepdf(data):
+    # possibility html -> pdf https://xhtml2pdf.readthedocs.io/en/latest/usage.html
+    # maybe? https://github.com/matthiask/pdfdocument
+    # looks the right thing to use for invoice: https://www.reportbro.com/home/index
+    print("start generating PDF")
+
+
 class OrderWizard(SessionWizardView):
     form_list = FORMS
     def get_template_names(self):
