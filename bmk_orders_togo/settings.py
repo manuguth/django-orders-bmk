@@ -135,9 +135,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'staticfiles'),
-)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles'),]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
