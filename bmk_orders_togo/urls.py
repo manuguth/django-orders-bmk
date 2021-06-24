@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from orders.forms import OrderModelForm, OrderProductForm, OrderTimeSlotForm
+# from django.conf.urls.static import static
 
 from orders.views import(
     SuccessView,
@@ -27,4 +27,5 @@ urlpatterns = [
     path('', OrderWizard.as_view()),
     path('bestellung/', OrderWizard.as_view()),
     path('success/', SuccessView.as_view(), name='success'),
-]
+] 
+# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
