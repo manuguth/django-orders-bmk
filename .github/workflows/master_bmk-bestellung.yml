@@ -33,7 +33,7 @@ jobs:
    
     - name: Collect static
       run: |
-        sudo echo de_DE.UTF-8 UTF-8 >> /etc/locale.gen && sudo locale-gen
+        sudo locale-gen de_DE.UTF-8
         python manage.py collectstatic
 
     # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
