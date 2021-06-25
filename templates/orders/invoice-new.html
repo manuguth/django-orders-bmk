@@ -114,8 +114,18 @@
             margin: 0;
             font-family:Verdana;
         }   
+         h3 {
+            color: #E00000;
+            font-size: 22px;
+            font-family:Verdana;
+        }   
+         h4 {
+            font-size: 14px;
+            font-family:Verdana;
+        }   
         p {
             font-family:Verdana;
+            font-size: 11px;
         }   
     </style>
 </head>
@@ -140,12 +150,12 @@
     </div>
     
     <div id="date_right">
-        <p style="text-align:right;"> 25.06.2021</p>
+        <p style="text-align:right;font-size: 12px;"> 25.06.2021</p>
         
     </div>
     
     <div id="left_info">
-        <p> <strong>Besteller</strong></p>
+        <h4> <strong>Besteller</strong></h4>
         <p>{{Name}}</p>
         <p>{{mail}}</p>
         <p>{{phone}}</p>
@@ -153,17 +163,17 @@
     </div>
     
     <div id="middle_info">
-        <p> <strong>Bestellnummer</strong></p>
+        <h4> <strong>Bestellnummer</strong></h4>
         <p>{{ID}}</p>
         
     </div>
     
     <div id="right_info">
-        <p> <strong>Abholtermin</strong></p>
+        <h4> <strong>Abholtermin</strong></h4>
         <p>{{Datum}}</p>
         <p>{{Uhrzeit}}</p>
-        <p><strong>Abholung am alten Bauhof</strong></p>
-        <p>(gegenüber vom Rathaus Buggingen)</p>
+        <p style="color:#E00000;"><strong>Abholung am alten Bauhof</strong></p>
+        <p style="color:#E00000;">(gegenüber vom Rathaus Buggingen)</p>
         
     </div>
     
@@ -173,7 +183,7 @@
     </div>
     
     <div id="sums">
-        <p style="text-align:right;"> <strong>Summe {{sum}}</strong></p>
+        <h3 style="text-align:right;"> <strong>Summe {{sum}}</strong></h3>
         
     </div>
     
