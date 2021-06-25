@@ -21,11 +21,13 @@ from .settings import STATIC_URL, STATIC_ROOT
 from orders.views import(
     SuccessView,
     OrderWizard,
-    )
+    render_pdf_view,
+   )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', OrderWizard.as_view()),
     path('bestellung/', OrderWizard.as_view()),
     path('success/', SuccessView.as_view(), name='success'),
+    path('download', render_pdf_view),
 ] + static(STATIC_URL, document_root=STATIC_ROOT)

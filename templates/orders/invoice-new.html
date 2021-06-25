@@ -1,0 +1,196 @@
+{% load static %}
+
+<!-- CSS CUSTOM -->
+<link rel=”stylesheet” href=”{% static 'css/styles.css' %}”>
+<html>
+
+<head>
+    <style>
+        @page {
+            size: a4 portrait;
+
+            @frame banner_left{
+                /* static frame for banner */
+                -pdf-frame-content: banner;
+                left: 0.89cm;
+                width: 3.74cm;
+                top: 0cm;
+                height: 5.35cm;
+
+            }
+            @frame logo_right{
+                -pdf-frame-content: logo;
+                left: 12.37cm;
+                width: 9.26cm;
+                top: 0cm;
+                height: 5.99cm;
+
+            }
+
+            @frame title_frame{
+                -pdf-frame-content: title_left;
+                left: 1.41cm;
+                width: 9.9cm;
+                top: 5.82cm;
+                height: 4cm;
+
+            }
+            
+            @frame date_frame{
+                -pdf-frame-content: date_right;
+                left: 16.54cm;
+                width: 3.14cm;
+                top: 7.59cm;
+                height: 0.96cm;
+
+            }
+            
+            @frame left_info_frame{
+                -pdf-frame-content: left_info;
+                left: 1.41cm;
+                width: 5.71cm;
+                top: 9.15cm;
+                height: 4.16cm;
+
+            }
+           
+            @frame middle_info_frame{
+                -pdf-frame-content: middle_info;
+                left: 7.66cm;
+                width: 5.71cm;
+                top: 9.15cm;
+                height: 4.16cm;
+
+            }
+           
+            @frame right_info_frame{
+                -pdf-frame-content: right_info;
+                left: 13.9cm;
+                width: 5.71cm;
+                top: 9.15cm;
+                height: 4.16cm;
+
+            }
+           
+            @frame order_frame{
+                -pdf-frame-content: orders;
+                left: 1.41cm;
+                width: 18.2cm;
+                top: 13.74cm;
+                height: 7.52cm;
+
+            }
+
+            @frame sum_frame{
+                -pdf-frame-content: sums;
+                left: 1.41cm;
+                width: 18.2cm;
+                top: 22.23cm;
+                height: 1.71cm;
+
+            }
+
+            @frame lower_frame{
+                -pdf-frame-content: lowerone;
+                left: 1.41cm;
+                width: 18.2cm;
+                top: 24.47cm;
+                height: 4.4cm;
+
+            }
+
+            
+        }
+        h1 {
+            color: #E00000;
+            font-size: 32px;
+            margin: 0;
+            font-family:Verdana;
+        }   
+       
+        h2 {
+            color: #929292;
+            font-size: 24px;
+            margin: 0;
+            font-family:Verdana;
+        }   
+        p {
+            font-family:Verdana;
+        }   
+    </style>
+</head>
+
+<body>
+    <!-- Content for Static Frame 'header_frame' -->
+    
+    <div id="banner">
+        <img src="banner.png" width="3.74cm" height="5.35cm">
+        
+    </div>
+    
+    <div id="logo">
+        <img src="logo.png" width="9.26cm" height="5.99cm">
+        
+    </div>
+    
+    <div id="title_left">
+        <h1 >Bestellbestätigung</h1>
+        <h2 >Festessen To Go</h2>
+        
+    </div>
+    
+    <div id="date_right">
+        <p style="text-align:right;"> 25.06.2021</p>
+        
+    </div>
+    
+    <div id="left_info">
+        <p> <strong>Besteller</strong></p>
+        <p>{{Name}}</p>
+        <p>{{mail}}</p>
+        <p>{{phone}}</p>
+        
+    </div>
+    
+    <div id="middle_info">
+        <p> <strong>Bestellnummer</strong></p>
+        <p>{{ID}}</p>
+        
+    </div>
+    
+    <div id="right_info">
+        <p> <strong>Abholtermin</strong></p>
+        <p>{{Datum}}</p>
+        <p>{{Uhrzeit}}</p>
+        <p><strong>Abholung am alten Bauhof</strong></p>
+        <p>(gegenüber vom Rathaus Buggingen)</p>
+        
+    </div>
+    
+    <div id="orders">
+        <p> Test</p>
+        
+    </div>
+    
+    <div id="sums">
+        <p style="text-align:right;"> <strong>Summe {{sum}}</strong></p>
+        
+    </div>
+    
+    <div id="lowerone">
+        <p> Vielen Dank für Ihre Bestellung. </p>
+        
+        <p>Bitte bezahlen Sie den oben genannten Betrag bei Abholung ihrer Bestellung passend in bar.</p>
+        
+        <p>Bei Rückfragen stehen wir Ihnen gerne zur Verfügung unter <a
+            href="mailto:bestellung@bmk-buggingen.de">bestellung@bmk-buggingen.de</a></p>
+        
+        
+        Anmerkungen:</p>
+        
+    </div>
+
+
+</body>
+
+</html>
