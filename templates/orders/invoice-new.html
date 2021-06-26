@@ -127,6 +127,32 @@
             font-family:Verdana;
             font-size: 11px;
         }   
+#customers {
+  font-family:Verdana;
+  font-size: 13px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+    padding-top: 2px;
+  padding-bottom: 2px;
+    border-right: solid 0px #f00; 
+  border-left: solid 0px #f00;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  text-align: left;
+  border: 0px solid #ddd;
+}
+
     </style>
 </head>
 
@@ -150,13 +176,13 @@
     </div>
     
     <div id="date_right">
-        <p style="text-align:right;font-size: 12px;"> 25.06.2021</p>
+        <p style="text-align:right;font-size: 12px;"> {{date}}</p>
         
     </div>
     
     <div id="left_info">
         <h4> <strong>Besteller</strong></h4>
-        <p>{{Name}}</p>
+        <p>{{namebesteller}}</p>
         <p>{{mail}}</p>
         <p>{{phone}}</p>
         
@@ -164,27 +190,43 @@
     
     <div id="middle_info">
         <h4> <strong>Bestellnummer</strong></h4>
-        <p>{{ID}}</p>
+        <p><strong>{{bestellid}}</strong></p>
         
     </div>
     
     <div id="right_info">
         <h4> <strong>Abholtermin</strong></h4>
-        <p>{{Datum}}</p>
-        <p>{{Uhrzeit}}</p>
+        <p>{{abholdatum}}</p>
+        <p>{{abholzeit}} Uhr</p>
         <p style="color:#E00000;"><strong>Abholung am alten Bauhof</strong></p>
         <p style="color:#E00000;">(gegenüber vom Rathaus Buggingen)</p>
         
     </div>
     
     <div id="orders">
-        <p> Test</p>
-        <p> {{myvar}}</p>
+   
         
+    <table style="width: 100%" id="customers">
+        <tr>
+            <th style="width: 50%;">Essen</th>
+            <th style="width: 16%;">Menge</th>
+            <th style="width: 16%;">Einzelpreis</th>
+            <th style="width: 16%;">Gesamtpreis</th>
+        </tr>
+        {% for item in products %}
+        <tr>
+            <td>{{item.name}} </td>
+            <td> {{item.amount}} </td>
+            <td> {{item.price}} €</td>
+            <td> {{item.total}}€ </td>
+        </tr>
+        {% endfor %}
+    </table>
+
     </div>
     
     <div id="sums">
-        <h3 style="text-align:right;"> <strong>Summe {{sum}}</strong></h3>
+        <h3 style="text-align:right;"> <strong>Summe {{total}} €</strong></h3>
         
     </div>
     
@@ -197,7 +239,7 @@
             href="mailto:bestellung@bmk-buggingen.de">bestellung@bmk-buggingen.de</a></p>
         
         
-        Anmerkungen:</p>
+        Anmerkungen: {{comments}}</p>
         
     </div>
 

@@ -22,6 +22,7 @@ from orders.views import(
     SuccessView,
     OrderWizard,
     render_pdf_view,
+    render_pdf,
    )
 
 urlpatterns = [
@@ -30,4 +31,5 @@ urlpatterns = [
     path('bestellung/', OrderWizard.as_view()),
     path('success/', SuccessView.as_view(), name='success'),
     path('download', render_pdf_view),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('get', render_pdf),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

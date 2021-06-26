@@ -35,6 +35,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
+from django.template.loader import render_to_string
+from io import BytesIO
+from tempfile import TemporaryFile
 
 if 'WEBSITE_HOSTNAME' not in os.environ:
     locale.setlocale(locale.LC_ALL, 'de_DE')
@@ -90,10 +93,26 @@ def render_pdf_view(request):
 # def render_pdf_view():
     # template_path = 'orders/invoice_template.html'
     template_path = 'orders/invoice-new.html'
-    context = {'myvar': 'this is your template context'}
+    
+    order = Order.objects.get(order_hash="fP4QYKCW1tNr3hWN-zjA5g")
+    class_date = timezone.localtime(order.time_slot)
+    context = {
+        'myvar': 'this is your template context',
+        'date': timezone.now().strftime("%d.%m.%Y"),
+        'namebesteller': order.name,
+        'mail': order.email,
+        'phone': order.phone,
+        'bestellid': order.id,
+        'abholdatum': class_date.strftime("%A %d. %B"),
+        'abholzeit': class_date.strftime("%H:%M"),
+        'products': getproductoverview(order.ordered_products),
+        'total': order.price_total,
+        'comments': order.comments
+        
+        }
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="Bestellbestätigung-{context["bestellid"]}.pdf"'
     # find the template and render it.
     template = get_template(template_path)
     html = template.render(context)
@@ -102,13 +121,55 @@ def render_pdf_view(request):
     # create a pdf
     pisa_status = pisa.CreatePDF(
         html, dest=response, link_callback=link_callback)
-    # if error then show some funy view
+    
+    file = TemporaryFile(mode="w+b")
+    pisa.CreatePDF(html.encode('utf-8'), dest=file,
+                   encoding='utf-8')
+
+    file.seek(0)
+    pdf = file.read()
+    file.close()
+    # store to db
+    # order_i = Order.objects.get(order_hash="fP4QYKCW1tNr3hWN-zjA5g")
+    # order_i.invoice = BytesIO(pdf)
+    # order_i.save()
+    
+    # if error then show some funny view
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     # purch_upd = purchase.objects.get(pk=purch_id)
     # purch_upd.receipt = File(receipt_file, filename)
     return response
 
+
+def render_pdf(request):
+    template_path = 'orders/invoice-new.html'
+    products = {"Pommes": 4, "PuteBrot": 2,
+                "SteakPom": 2, "CamembertWeckle": 1}
+    context = {
+        'myvar': 'this is your template context',
+        'date': timezone.now().strftime("%d.%m.%Y"),
+        'namebesteller': "Manuel Guth",
+        'mail': "bestellung@bmk-buggingen.de",
+        'phone': "123456",
+        'bestellid': '12',
+        'abholdatum': 'Sonntag, 18.07.2021',
+        'abholzeit': '12.15',
+        'products': getproductoverview(products),
+        'total': calculateprice(products)
+    }
+
+    template = get_template(template_path)
+    html = template.render(context)
+    io_bytes = BytesIO()
+
+    # pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), io_bytes)
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), io_bytes)
+
+    if not pdf.err:
+        return HttpResponse(io_bytes.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse("Error while rendering PDF", status=400)
 
 def calculateprice(form_product_data, n_products=False):
     price = 0
