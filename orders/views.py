@@ -7,6 +7,8 @@ from django.http import HttpResponseRedirect
 from formtools.wizard.views import SessionWizardView
 from django.core.mail import EmailMessage
 from django.core import mail
+from django.core.files import File
+from io import BytesIO
 
 from django.views.generic import FormView, TemplateView
 from django.urls import reverse_lazy
@@ -85,6 +87,7 @@ def link_callback(uri, rel):
 
 
 def render_pdf_view(request):
+# def render_pdf_view():
     # template_path = 'orders/invoice_template.html'
     template_path = 'orders/invoice-new.html'
     context = {'myvar': 'this is your template context'}
@@ -94,6 +97,7 @@ def render_pdf_view(request):
     # find the template and render it.
     template = get_template(template_path)
     html = template.render(context)
+    
 
     # create a pdf
     pisa_status = pisa.CreatePDF(
@@ -101,6 +105,8 @@ def render_pdf_view(request):
     # if error then show some funy view
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    # purch_upd = purchase.objects.get(pk=purch_id)
+    # purch_upd.receipt = File(receipt_file, filename)
     return response
 
 
@@ -203,6 +209,9 @@ class OrderWizard(SessionWizardView):
         # TODO: write to database
         # create a unique hash for each order
         order_hash = secrets.token_urlsafe(16)
+        response = render_pdf_view()
+        receipt_file = BytesIO(response.content)
+
         order = Order(
             time_stamp=timezone.now(),
             name=personal_details["name"],
@@ -214,6 +223,7 @@ class OrderWizard(SessionWizardView):
             ordered_products=products,
             order_hash=order_hash,
             n_ordered_products=n_ordered_products,
+            invoice=receipt_file,
         )
         order.save()
         # retrieve order ID and set variable
@@ -236,7 +246,6 @@ class OrderWizard(SessionWizardView):
                              order_id=order_id,
                             connection=connection)
             email.send()
-        
         return render(self.request, 'orders/success.html', {
             'form_data': [form.cleaned_data for form in form_list],
             'order_id': order_id

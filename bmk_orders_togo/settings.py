@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -134,8 +135,6 @@ USE_TZ = True
 
 
 
-# # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -154,3 +153,5 @@ DEFAULT_FROM_EMAIL = "bestellung@bmk-buggingen.de"
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# # Extra places for collectstatic to find static files.
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
