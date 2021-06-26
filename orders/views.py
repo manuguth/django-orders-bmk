@@ -89,12 +89,10 @@ def link_callback(uri, rel):
     return path
 
 
-def render_pdf_view(request):
-# def render_pdf_view():
-    # template_path = 'orders/invoice_template.html'
+def render_pdf_view(request, order_hash):
     template_path = 'orders/invoice-new.html'
-    
-    order = Order.objects.get(order_hash="fP4QYKCW1tNr3hWN-zjA5g")
+    # fP4QYKCW1tNr3hWN-zjA5g
+    order = Order.objects.get(order_hash=order_hash)
     class_date = timezone.localtime(order.time_slot)
     context = {
         'myvar': 'this is your template context',
@@ -106,7 +104,7 @@ def render_pdf_view(request):
         'abholdatum': class_date.strftime("%A %d. %B"),
         'abholzeit': class_date.strftime("%H:%M"),
         'products': getproductoverview(order.ordered_products),
-        'total': order.price_total,
+        'total': calculateprice(order.ordered_products),
         'comments': order.comments
         
         }
@@ -123,15 +121,18 @@ def render_pdf_view(request):
         html, dest=response, link_callback=link_callback)
     
     file = TemporaryFile(mode="w+b")
-    pisa.CreatePDF(html.encode('utf-8'), dest=file,
-                   encoding='utf-8')
+    pisa.CreatePDF(html, dest=file, link_callback=link_callback)
 
     file.seek(0)
     pdf = file.read()
     file.close()
+    # email = EmailMessage(
+    #     'Hello', 'Body', 'bestellung@bmk-buggingen.de', ['bestellung@bmk-buggingen.de'])
+    # email.attach(f"Bestellbestätigung-{order.id}.pdf", pdf, 'application/pdf')
+    # email.send()
     # store to db
     # order_i = Order.objects.get(order_hash="fP4QYKCW1tNr3hWN-zjA5g")
-    # order_i.invoice = BytesIO(pdf)
+    # order_i.invoice = pdf # seems not to work ...
     # order_i.save()
     
     # if error then show some funny view
@@ -142,34 +143,31 @@ def render_pdf_view(request):
     return response
 
 
-def render_pdf(request):
-    template_path = 'orders/invoice-new.html'
-    products = {"Pommes": 4, "PuteBrot": 2,
-                "SteakPom": 2, "CamembertWeckle": 1}
+def GetPDFOrderContext(order):
+    class_date = timezone.localtime(order.time_slot)
     context = {
-        'myvar': 'this is your template context',
         'date': timezone.now().strftime("%d.%m.%Y"),
-        'namebesteller': "Manuel Guth",
-        'mail': "bestellung@bmk-buggingen.de",
-        'phone': "123456",
-        'bestellid': '12',
-        'abholdatum': 'Sonntag, 18.07.2021',
-        'abholzeit': '12.15',
-        'products': getproductoverview(products),
-        'total': calculateprice(products)
+        'namebesteller': order.name,
+        'mail': order.email,
+        'phone': order.phone,
+        'bestellid': order.id,
+        'abholdatum': class_date.strftime("%A %d. %B"),
+        'abholzeit': class_date.strftime("%H:%M"),
+        'products': getproductoverview(order.ordered_products),
+        'total': calculateprice(order.ordered_products),
+        'comments': order.comments
     }
+    return context
 
-    template = get_template(template_path)
-    html = template.render(context)
-    io_bytes = BytesIO()
-
-    # pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), io_bytes)
-    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), io_bytes)
-
-    if not pdf.err:
-        return HttpResponse(io_bytes.getvalue(), content_type='application/pdf')
-    else:
-        return HttpResponse("Error while rendering PDF", status=400)
+def get_pdf(order):
+    template = get_template('orders/invoice-new.html')
+    html = template.render(GetPDFOrderContext(order))
+    file = TemporaryFile(mode="w+b")
+    pisa.CreatePDF(html, dest=file, link_callback=link_callback)
+    file.seek(0)
+    pdf = file.read()
+    file.close()
+    return pdf
 
 def calculateprice(form_product_data, n_products=False):
     price = 0
@@ -270,8 +268,6 @@ class OrderWizard(SessionWizardView):
         # TODO: write to database
         # create a unique hash for each order
         order_hash = secrets.token_urlsafe(16)
-        response = render_pdf_view()
-        receipt_file = BytesIO(response.content)
 
         order = Order(
             time_stamp=timezone.now(),
@@ -284,7 +280,6 @@ class OrderWizard(SessionWizardView):
             ordered_products=products,
             order_hash=order_hash,
             n_ordered_products=n_ordered_products,
-            invoice=receipt_file,
         )
         order.save()
         # retrieve order ID and set variable
@@ -297,7 +292,7 @@ class OrderWizard(SessionWizardView):
         timeslot_db.received_orders += n_ordered_products
         timeslot_db.save()
         # TODO: check again if timeslot matches ordered food - probably not necessary
-
+        pdf = get_pdf(order)
         
         with mail.get_connection() as connection:
             email = sendmail(mailto=personal_details["email"],
@@ -306,10 +301,12 @@ class OrderWizard(SessionWizardView):
                             timeslot=timeslot,
                              order_id=order_id,
                             connection=connection)
+            email.attach(
+                f"Bestellbestätigung-{order.id}.pdf", pdf, 'application/pdf')
             email.send()
         return render(self.request, 'orders/success.html', {
             'form_data': [form.cleaned_data for form in form_list],
-            'order_id': order_id
+            'order_id': order_id, "order_hash": order_hash
         })
     
 

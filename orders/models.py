@@ -16,7 +16,6 @@ class Order(models.Model):
     ordered_products = models.JSONField(default=dict)
     n_ordered_products = models.IntegerField()
     order_hash = models.CharField(max_length=200)
-    invoice = models.FileField()
     
     # ordered_products field
     # for sqlite only json Fields are possible
