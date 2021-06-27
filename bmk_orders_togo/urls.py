@@ -22,7 +22,13 @@ from orders.views import(
     SuccessView,
     OrderWizard,
     render_pdf_view,
+    order_overview_view,
    )
+
+from accounts.views import (
+    login_view,
+    logout_view,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +36,8 @@ urlpatterns = [
     path('bestellung/', OrderWizard.as_view()),
     path('success/', SuccessView.as_view(), name='success'),
     path('download', render_pdf_view),
+    path('orders/overview', order_overview_view),
     path('download/<slug:order_hash>', render_pdf_view),
+    path('login/', login_view),
+    path('logout/', logout_view),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

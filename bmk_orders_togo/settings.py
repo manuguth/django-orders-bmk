@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts',
     'products',
     'orders',
     'inventory',
@@ -163,3 +164,6 @@ MEADIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 TEMPLATE_CONTEXT_PROCESSORS = 'django.core.context_processors.request'
+
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"

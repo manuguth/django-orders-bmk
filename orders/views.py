@@ -1,14 +1,15 @@
+from django.contrib.auth import authenticate, login
 import os
 import secrets
 from django.db import connection
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.http import HttpResponseRedirect
 from formtools.wizard.views import SessionWizardView
 from django.core.mail import EmailMessage
 from django.core import mail
-from django.core.files import File
-from io import BytesIO
+
+from django.contrib.auth.decorators import login_required
 
 from django.views.generic import FormView, TemplateView
 from django.urls import reverse_lazy
@@ -250,8 +251,8 @@ class OrderWizard(SessionWizardView):
         return context
     
     def done(self, form_list, **kwargs):
-        print(form_list[0].cleaned_data)
-        print([form.cleaned_data for form in form_list])
+        # print(form_list[0].cleaned_data)
+        # print([form.cleaned_data for form in form_list])
         personal_details = super().get_cleaned_data_for_step("personaldetails")
         products = super().get_cleaned_data_for_step("productchoice")
         price, n_ordered_products = calculateprice(products, n_products=True)
@@ -308,3 +309,9 @@ class SuccessView(TemplateView):
     template_name = 'orders/success.html'
 
 
+@login_required
+def order_overview_view(request):
+    """"""
+    orders = Order.objects.all()
+    return render(request, "orders/overview.html", 
+                  {'orders': orders})
