@@ -57,7 +57,7 @@ class OrderProductForm(forms.Form):
             self.fields[field_name] = forms.IntegerField(max_value=40, 
                 min_value=0,
                 required=False,
-                label=boldlabel(entry.title),
+                label=boldlabel(f"{entry.title} - {entry.price} €"),
                 help_text=entry.description,
                 widget=forms.NumberInput(
                     attrs={'placeholder': f"Geben Sie Ihre gewünschte Anzahl an '{entry.title}' an."})
