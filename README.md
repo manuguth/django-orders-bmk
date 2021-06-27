@@ -15,3 +15,12 @@
 
 ### Startup
 `echo de_DE ISO-8859-1 >> /etc/locale.gen && locale-gen`
+
+
+## Adding timeslots
+
+it is possible to add timeslots from a yaml file via
+
+```
+python manage.py addtimeslots scripts/timeslots.yaml
+```

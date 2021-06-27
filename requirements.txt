@@ -7,3 +7,4 @@ sqlparse==0.4.1
 whitenoise
 psycopg2-binary
 xhtml2pdf==0.2.5
+pyyaml
