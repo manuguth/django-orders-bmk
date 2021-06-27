@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'inventory',
     'crispy_forms',
     'formtools',
+    'cookielaw',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -160,3 +161,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEADIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+TEMPLATE_CONTEXT_PROCESSORS = 'django.core.context_processors.request'
