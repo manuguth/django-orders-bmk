@@ -8,7 +8,7 @@ ADMINS = [('Manuel', 'bestellung@bmk-buggingen.de')]
 # that Azure automatically creates for us.
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME'], "127.0.0.1",
                  "bestellung.bmk-buggingen.de",
-                 
+                 "www.bestellung.bmk-buggingen.de",
                  ] if 'WEBSITE_HOSTNAME' in os.environ else []
 
 # WhiteNoise configuration
