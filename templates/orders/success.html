@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <p class="text-success">Vielen Dank für Ihre Bestellung.</p>
 <p>Sie erhalten in Kürze eine Bestätigungsmail</p>
 
 <p style="margin-bottom: 40px">Ihre Bestellnummer lautet: <b>{{order_id}}</b></p>
+
 
 <a href="/download/{{order_hash}}"><button class="btn btn-primary">Bestellbestätigung herunterladen</button></a>
 <p style="margin-bottom: 40px"></p>
