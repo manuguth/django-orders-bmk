@@ -306,9 +306,11 @@ class OrderWizard(SessionWizardView):
         })
     
 
-class SuccessView(TemplateView):
-    template_name = 'orders/success.html'
+# class SuccessView(TemplateView):
+#     template_name = 'orders/success.html'
 
+def SuccessView(request):
+    return render(request, "orders/success.html")
 
 @login_required
 def order_overview_view(request):

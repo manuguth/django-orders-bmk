@@ -35,7 +35,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', OrderWizard.as_view()),
     path('bestellung/', OrderWizard.as_view()),
-    path('success/', SuccessView.as_view(), name='success'),
+    path('success', SuccessView),
     path('download', render_pdf_view),
     path('orders/overview', order_overview_view),
     path('orders/<int:id>', order_detail_view),
