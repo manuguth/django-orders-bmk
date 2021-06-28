@@ -19,6 +19,7 @@ from .forms import(
     OrderProductForm,
     OrderTimeSlotForm,
     OrderCheckoutForm,
+    OrderProductEditForm,
     )
 from .models import Order
 
@@ -212,7 +213,7 @@ Bei Rückfragen stehen wir Ihnen gerne zur Verfügung unter bestellung@bmk-buggi
 Ihre Bergmannskapelle Buggingen e.V.
 """
     email = EmailMessage(
-        subject=f'Bestellbestätigung Maihock To Go - Bestellung {order_id}',
+        subject=f'Bestellbestätigung Festessen To Go - Bestellung {order_id}',
         body=message,
         from_email='"Bestellung BMK Buggingen"<bestellung@bmk-buggingen.de>',
         to=[mailto],
@@ -315,3 +316,18 @@ def order_overview_view(request):
     orders = Order.objects.all()
     return render(request, "orders/overview.html", 
                   {'orders': orders})
+
+
+@login_required
+def order_detail_view(request, id):
+    form = OrderProductEditForm(id=id)
+    order = Order.objects.all()
+
+    if request.method == 'POST':
+        form = OrderProductEditForm(request.POST, id=id)
+        if form.is_valid():
+            cd = form.cleaned_data
+            #now in the object cd, you have the form as a dictionary.
+            a = cd.get('a')
+            print(cd)
+    return render(request, "orders/crispy_form.html", {'form': form})

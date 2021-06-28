@@ -105,3 +105,46 @@ class OrderCheckoutForm(forms.Form):
 
     check_me_out = forms.BooleanField(required=True, label=boldlabel("Hiermit bestätige ich meine oben aufgeführte Bestellung."),
                                       help_text="")
+
+
+class OrderProductEditForm(forms.Form):
+
+    def __init__(self, id, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        order = Order.objects.get(id=id)
+        qs = Product.objects.all()
+        fields = [[i.short_title, i.display_order, i.id] for i in qs]
+        fields = sorted(fields, key=lambda l: l[1])
+        field_names = [i[0] for i in fields]
+        field_ids = [i[2] for i in fields]
+
+        # time_stamp
+        # name
+        # email
+        # phone
+        # comments
+        # time_slot
+        # price_total
+        # ordered_products
+        # order_hash
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Hier können Sie ihre Bestellung aufgeben',
+                *fields
+            ),
+            ButtonHolder(
+                Submit('submit', 'Änderung speichern', css_class='button white')
+            )
+        )
+        for i in range(len(qs)):
+            entry = Product.objects.get(id=field_ids[i])
+            field_name = entry.short_title
+            print(order.ordered_products)
+            n_ordered = order.ordered_products[field_name]
+            self.fields[field_name] = forms.IntegerField(min_value=0,
+                                                         required=False,
+                                                         label=entry.title,
+                                                         help_text=entry.description,
+                                                         initial= 0 if n_ordered is None else n_ordered
+                                                         )

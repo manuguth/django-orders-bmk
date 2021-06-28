@@ -23,6 +23,7 @@ from orders.views import(
     OrderWizard,
     render_pdf_view,
     order_overview_view,
+    order_detail_view,
    )
 
 from accounts.views import (
@@ -37,6 +38,7 @@ urlpatterns = [
     path('success/', SuccessView.as_view(), name='success'),
     path('download', render_pdf_view),
     path('orders/overview', order_overview_view),
+    path('orders/<int:id>', order_detail_view),
     path('download/<slug:order_hash>', render_pdf_view),
     path('login/', login_view),
     path('logout/', logout_view),
