@@ -48,7 +48,7 @@
 
         {% for item in orders %}
         <tr>
-            <td>{{item.id}}</td>
+            <td><a href="{{item.id}}">{{item.id}}</a></td>
             <td>{{item.name}}</td>
             <td>{{item.time_slot}}</td>
             <td>{{item.price_total}} €</td>

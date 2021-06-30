@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 from orders.views import(
     SuccessView,
@@ -38,7 +39,10 @@ urlpatterns = [
     path('success', SuccessView),
     path('download', render_pdf_view),
     path('orders/overview', order_overview_view),
-    path('orders/<int:id>', order_detail_view),
+    # path('orders/<int:id>', order_detail_view.as_view(), name="form_order"),
+    # path('orders/test', order_detail_view.as_view(), name="form_order"),
+    # path('form/4/', order_detail_view.as_view(), name='form_4'),
+    path('orders/<int:id>', login_required(order_detail_view.as_view())),
     path('download/<slug:order_hash>', render_pdf_view),
     path('login/', login_view),
     path('logout/', logout_view),

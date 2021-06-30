@@ -312,6 +312,15 @@ class OrderWizard(SessionWizardView):
 def SuccessView(request):
     return render(request, "orders/success.html")
 
+
+# @login_required
+class order_detail_view(FormView):
+    form_class = OrderProductEditForm
+    success_url = reverse_lazy('orders/success.html')
+    template_name = 'orders/crispy_form.html'
+
+
+
 @login_required
 def order_overview_view(request):
     """"""
@@ -320,16 +329,20 @@ def order_overview_view(request):
                   {'orders': orders})
 
 
-@login_required
-def order_detail_view(request, id):
-    form = OrderProductEditForm(id=id)
-    order = Order.objects.all()
+class order_detail_view(FormView):
+    form_class = OrderProductEditForm
+    success_url = reverse_lazy('success')
+    template_name = 'orders/crispy_form.html'
 
-    if request.method == 'POST':
-        form = OrderProductEditForm(request.POST, id=id)
-        if form.is_valid():
-            cd = form.cleaned_data
-            #now in the object cd, you have the form as a dictionary.
-            a = cd.get('a')
-            print(cd)
-    return render(request, "orders/crispy_form.html", {'form': form})
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        # form.send_email()
+        # TODO: add update inventory function
+        # TODO: add invoice download option
+        return super().form_valid(form)
+    
+    def get_form_kwargs(self):
+        kwargs = super(order_detail_view, self).get_form_kwargs()
+        kwargs['id'] = self.kwargs['id']
+        return kwargs
