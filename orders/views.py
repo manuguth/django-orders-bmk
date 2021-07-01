@@ -265,7 +265,6 @@ class OrderWizard(SessionWizardView):
             parse_datetime(super().get_cleaned_data_for_step("timeslot")["time_slot"]))
         timeslot = class_date.strftime("%A %d. %B %H:%M")
         
-        # TODO: write to database
         # create a unique hash for each order
         order_hash = secrets.token_urlsafe(16)
 
@@ -343,9 +342,6 @@ class order_detail_view(FormView):
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
-        # form.send_email()
-        # TODO: add update inventory function
-        # TODO: add invoice download option
         qs = Product.objects.all()
         fields = [[i.short_title, i.display_order, i.id] for i in qs]
         fields = sorted(fields, key=lambda l: l[1])
@@ -361,7 +357,6 @@ class order_detail_view(FormView):
         order.email = form_data["email"]
         order.phone = form_data["phone"]
         order.comments = form_data["comments"]
-        print(form_data["time_slot"])
         order.time_slot = class_date
         order.price_total = price
         order.ordered_products = products
@@ -401,17 +396,62 @@ class order_detail_view(FormView):
 
 class internnal_order_view(FormView):
     form_class = OrderProductInternalForm
-    success_url = 'SuccessView'
+    success_url = '/orders/overview'
     template_name = 'orders/crispy_form.html'
     # TODO: seems not to work yet, need to figure out how to pass context data
     context_object_name = 'order'
 
     def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        # form.send_email()
-        # TODO: add update inventory function
-        # TODO: add invoice download option
+        qs = Product.objects.all()
+        fields = [[i.short_title, i.display_order, i.id] for i in qs]
+        fields = sorted(fields, key=lambda l: l[1])
+        field_names = [i[0] for i in fields]
+        form_data = form.cleaned_data
+        products = {
+            your_key: form_data[your_key] for your_key in field_names}
+        ordered_products = form_data
+        class_date = timezone.localtime(parse_datetime(form_data["time_slot"]))
+        price, n_ordered_products = calculateprice(products, n_products=True)
+        
+        # create a unique hash for each order
+        order_hash = secrets.token_urlsafe(16)
+
+        order = Order(
+            time_stamp=timezone.now(),
+            name=form_data["name"],
+            email=form_data["email"],
+            phone=form_data["phone"],
+            comments=form_data["comments"],
+            time_slot=class_date,
+            price_total=price,
+            ordered_products=products,
+            order_hash=order_hash,
+            n_ordered_products=n_ordered_products,
+        )
+        order.save()
+        # retrieve order ID and set variable
+        order_id = order.id
+        # augmenting amount of ordered food
+        timeslot_db = Inventory.objects.get(time_slot=class_date)
+        timeslot_db.received_orders += n_ordered_products
+        timeslot_db.save()
+        # TODO: check again if timeslot matches ordered food - probably not necessary
+        pdf = get_pdf(order)
+        timeslot = class_date.strftime("%A %d. %B %H:%M")
+
+        with mail.get_connection() as connection:
+            email = sendmail(mailto=form_data["email"],
+                             name=form_data["name"],
+                             price=price,
+                             timeslot=timeslot,
+                             order_id=order.id,
+                             connection=connection)
+            email.attach(
+                f"Bestellbestätigung-{order.id}.pdf", pdf, 'application/pdf')
+            email.send()
+        # return render(self.request, 'orders/success.html', {
+        #     'order_id': order_id, "order_hash": order_hash
+        # })
         return super().form_valid(form)
     
     

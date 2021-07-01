@@ -257,7 +257,7 @@ class OrderProductInternalForm(forms.Form):
         self.fields["phone"] = forms.CharField(max_length=220,
                                 label=boldlabel('Telefonnummer'))
         self.fields["comments"] = forms.CharField(max_length=220,
-                                label=boldlabel('Kommentar'))
+                                label=boldlabel('Kommentar'), required=False)
         
         qs_inventory = Inventory.objects.all()
         slots = self.GetTimeSlots(qs_inventory)
