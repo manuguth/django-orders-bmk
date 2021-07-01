@@ -201,7 +201,8 @@ def getproductoverview(form_product_data):
     return products
     
 
-def sendmail(mailto, name, price, timeslot, order_id, connection):
+def sendmail(mailto, name, price, timeslot, order_id, connection,
+             custom_message=None):
     message = f"""
 Guten Tag {name}, 
 
@@ -213,6 +214,8 @@ Bei Rückfragen stehen wir Ihnen gerne zur Verfügung unter bestellung@bmk-buggi
 
 Ihre Bergmannskapelle Buggingen e.V.
 """
+    if custom_message is not None:
+        message = custom_message
     email = EmailMessage(
         subject=f'Bestellbestätigung Festessen To Go - Bestellung {order_id}',
         body=message,
@@ -332,7 +335,7 @@ def order_overview_view(request):
 
 class order_detail_view(FormView):
     form_class = OrderProductEditForm
-    success_url = reverse_lazy('success')
+    success_url = '/orders/overview'
     template_name = 'orders/crispy_form.html'
     # TODO: seems not to work yet, need to figure out how to pass context data
     context_object_name = 'order'
@@ -343,11 +346,49 @@ class order_detail_view(FormView):
         # form.send_email()
         # TODO: add update inventory function
         # TODO: add invoice download option
+        qs = Product.objects.all()
+        fields = [[i.short_title, i.display_order, i.id] for i in qs]
+        fields = sorted(fields, key=lambda l: l[1])
+        field_names = [i[0] for i in fields]
+        form_data = form.cleaned_data
+        products = {
+            your_key: form_data[your_key] for your_key in field_names}
+        ordered_products = form_data
+        class_date = timezone.localtime(parse_datetime(form_data["time_slot"]))
+        price, n_ordered_products = calculateprice(products, n_products=True)
+        order = Order.objects.get(id=self.id)
+        order.name = form_data["name"]
+        order.email = form_data["email"]
+        order.phone = form_data["phone"]
+        order.comments = form_data["comments"]
+        print(form_data["time_slot"])
+        order.time_slot = class_date
+        order.price_total = price
+        order.ordered_products = products
+        order.n_ordered_products = n_ordered_products
+        order.save()
+        UpdateInventory()
+        if form_data["send_mail"]:
+            pdf = get_pdf(order)
+            timeslot = class_date.strftime("%A %d. %B %H:%M")
+
+            with mail.get_connection() as connection:
+                email = sendmail(mailto=form_data["email"],
+                                 name=form_data["name"],
+                                price=price,
+                                 timeslot=timeslot,
+                                 order_id=order.id,
+                                connection=connection,
+                                 custom_message=form_data["mailtext"])
+                email.attach(
+                    f"Bestellbestätigung-{order.id}.pdf", pdf, 'application/pdf')
+                email.send()
         return super().form_valid(form)
     
     def get_form_kwargs(self):
         kwargs = super(order_detail_view, self).get_form_kwargs()
         kwargs['id'] = self.kwargs['id']
+        self.id = self.kwargs['id']
         return kwargs
     
     def get_context_data(self, **kwargs):
@@ -360,7 +401,7 @@ class order_detail_view(FormView):
 
 class internnal_order_view(FormView):
     form_class = OrderProductInternalForm
-    success_url = reverse_lazy('success')
+    success_url = 'SuccessView'
     template_name = 'orders/crispy_form.html'
     # TODO: seems not to work yet, need to figure out how to pass context data
     context_object_name = 'order'
@@ -382,3 +423,21 @@ class internnal_order_view(FormView):
         return context
 
 
+
+
+def UpdateInventory():
+    """function to update the inventory e.g. after modifying or deleting an order"""
+    inventory = Inventory.objects.all()
+    
+    for item in inventory:
+        qs = Order.objects.filter(time_slot=item.time_slot)
+        
+        n_products = 0 
+        for order in qs:
+            n_products += order.n_ordered_products
+        if item.received_orders != n_products:
+            print(
+                f"Changing n products in timeslot {item.time_slot} from {item.received_orders} to {n_products}")
+            item.received_orders = n_products
+            item.save()
+            

@@ -44,6 +44,7 @@
             <th>Name</th>
             <th>Abholzeit</th>
             <th>Preis</th>
+            <th>Bestellbestätigung</th>
         </tr>
 
         {% for item in orders %}
@@ -52,6 +53,8 @@
             <td>{{item.name}}</td>
             <td>{{item.time_slot}}</td>
             <td>{{item.price_total}} €</td>
+            <td><a href="/download/{{item.order_hash}}">Download</a></td>
+
         </tr>
      {% endfor %}
         

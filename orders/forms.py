@@ -140,6 +140,8 @@ class OrderProductEditForm(forms.Form):
             "comments",
             "time_slot",
             *form_rows,
+            "send_mail",
+            "mailtext",
             ButtonHolder(
                 Submit('submit', 'Änderung speichern',
                        css_class='button white')
@@ -174,6 +176,20 @@ class OrderProductEditForm(forms.Form):
 
         self.fields["time_slot"] = forms.ChoiceField(choices=STATES, label=boldlabel("Abholzeit"),
                                                      initial=order.time_slot)
+        self.fields["send_mail"] = forms.BooleanField(required=False, label="Bestätigungsmail mit Änderungen senden")
+        custom_message = f"""
+Guten Tag {order.name}, 
+
+Wir haben wie gewünscht Ihre Bestellung geändert. Anbei erhalten Sie Ihre aktualisierte Bestellbestätigung als pdf-Datei.
+
+Bei Rückfragen stehen wir Ihnen gerne zur Verfügung unter bestellung@bmk-buggingen.de.
+
+Ihre Bergmannskapelle Buggingen e.V.
+"""
+        self.fields["mailtext"] = forms.CharField(
+            max_length=2220, label='E-Mail Text', widget=forms.Textarea(), initial=custom_message)
+
+
 
     def GetTimeSlots(self, qs):
         slots = []
