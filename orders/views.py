@@ -20,6 +20,7 @@ from .forms import(
     OrderTimeSlotForm,
     OrderCheckoutForm,
     OrderProductEditForm,
+    OrderProductInternalForm,
     )
 from .models import Order
 
@@ -333,6 +334,8 @@ class order_detail_view(FormView):
     form_class = OrderProductEditForm
     success_url = reverse_lazy('success')
     template_name = 'orders/crispy_form.html'
+    # TODO: seems not to work yet, need to figure out how to pass context data
+    context_object_name = 'order'
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
@@ -346,3 +349,36 @@ class order_detail_view(FormView):
         kwargs = super(order_detail_view, self).get_form_kwargs()
         kwargs['id'] = self.kwargs['id']
         return kwargs
+    
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['price'] = 12
+        return context
+
+
+class internnal_order_view(FormView):
+    form_class = OrderProductInternalForm
+    success_url = reverse_lazy('success')
+    template_name = 'orders/crispy_form.html'
+    # TODO: seems not to work yet, need to figure out how to pass context data
+    context_object_name = 'order'
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        # form.send_email()
+        # TODO: add update inventory function
+        # TODO: add invoice download option
+        return super().form_valid(form)
+    
+    
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['price'] = 12
+        return context
+
+

@@ -25,6 +25,7 @@ from orders.views import(
     render_pdf_view,
     order_overview_view,
     order_detail_view,
+    internnal_order_view
    )
 
 from accounts.views import (
@@ -43,6 +44,7 @@ urlpatterns = [
     # path('orders/test', order_detail_view.as_view(), name="form_order"),
     # path('form/4/', order_detail_view.as_view(), name='form_4'),
     path('orders/<int:id>', login_required(order_detail_view.as_view())),
+    path('orders/internal', login_required(internnal_order_view.as_view())),
     path('download/<slug:order_hash>', render_pdf_view),
     path('login/', login_view),
     path('logout/', logout_view),
