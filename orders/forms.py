@@ -219,6 +219,7 @@ class OrderProductInternalForm(forms.Form):
             "comments",
             "time_slot",
             *form_rows,
+            "order_type",
             ButtonHolder(
                 Submit('submit', 'Bestellung speichern',
                        css_class='button white')
@@ -248,6 +249,17 @@ class OrderProductInternalForm(forms.Form):
         STATES = tuple(slots)
 
         self.fields["time_slot"] = forms.ChoiceField(choices=STATES, label=boldlabel("Abholzeit"))
+        
+        ORDERSTATES = (
+            ("portal", "Portal"),
+            ("phone", "Telefon"),
+            ("mail", "E-Mail"),
+            ("inperson", "Laufkundschaft"),
+            ("other", "Sonstiges"),
+        )
+        self.fields["order_type"] = forms.ChoiceField(
+            choices=ORDERSTATES, label=boldlabel("Bestellart"), initial="phone")
+
 
     def GetTimeSlots(self, qs):
         slots = []
