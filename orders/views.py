@@ -280,6 +280,56 @@ class OrderWizard(SessionWizardView):
             order_hash=order_hash,
             n_ordered_products=n_ordered_products,
         )
+        # check if order already exists and if so don't save it
+        duplicate_order = Order.objects.filter(name=personal_details["name"],
+                                           email=personal_details["email"],
+                                           time_slot=class_date,
+                                           ordered_products=products)
+        is_duplicate = duplicate_order.count()
+
+        if n_ordered_products > 50:
+            with mail.get_connection() as connection:
+                email = EmailMessage(
+                    subject=f'[Bestellportal] Limit exceeded',
+                    body=f"""Order limit exceeded
+
+                    name: {personal_details["name"]}
+                    email: {personal_details["email"]}
+                    phone: {personal_details["phone"]}
+                    comments: {personal_details["comments"]}
+                    time_slot: {class_date}
+                    price_total: {price}
+                    ordered_products: {products}
+                    order_hash: {order_hash}
+                    n_ordered_products: {n_ordered_products}
+                    """,
+                    from_email='"Bestellung BMK Buggingen"<bestellung@bmk-buggingen.de>',
+                    to=["bestellung@bmk-buggingen.de"],
+                    connection=connection
+                )
+            email.send()
+            return render(self.request, 'orders/failed-limit_exceeded.html')
+        if is_duplicate > 0:
+            print("This is an Order duplicate. Please get in touch with us!")
+            with mail.get_connection() as connection:
+                email = EmailMessage(
+                    subject=f'[Bestellportal] Duplication Error',
+                    body=f"""Eine Bestellung wurde zweifach aufgegeben 
+                    
+                    products: {duplicate_order[0].ordered_products}
+                    
+                    ID: {duplicate_order[0].id}
+                    time_slot: {duplicate_order[0].time_slot}
+                    name: {duplicate_order[0].name}
+                    mail: {duplicate_order[0].email}
+                    """,
+                    from_email='"Bestellung BMK Buggingen"<bestellung@bmk-buggingen.de>',
+                    to=["bestellung@bmk-buggingen.de"],
+                    connection=connection
+                )
+            email.send()
+            return render(self.request, 'orders/failed.html')
+        
         order.save()
         # retrieve order ID and set variable
         order_id = order.id
@@ -463,8 +513,6 @@ class internnal_order_view(FormView):
         return context
 
 
-
-
 def UpdateInventory():
     """function to update the inventory e.g. after modifying or deleting an order"""
     inventory = Inventory.objects.all()
@@ -480,4 +528,12 @@ def UpdateInventory():
                 f"Changing n products in timeslot {item.time_slot} from {item.received_orders} to {n_products}")
             item.received_orders = n_products
             item.save()
-            
+
+
+@login_required
+def order_lists_distribution(request):
+    """"""
+    qs = 0
+    # qs = Order.objects.filter(time_slot=item.time_slot)
+    # return render(request, "orders/overview.html",
+    #               {'orders': orders})
