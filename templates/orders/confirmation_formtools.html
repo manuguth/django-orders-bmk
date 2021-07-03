@@ -45,7 +45,7 @@
     <button class="btn btn-primary" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
     {% endif %}
     {% if price > 0 %}
-    <input class="btn btn-primary" type="submit" value="{% trans " Bestellung aufgeben" %}" />
+    <input class="btn btn-primary" type="submit" value="{% trans " Bestellung aufgeben" %}" onclick="this.disabled=true,this.form.submit();"/>
     {% endif %}
 </form>
 {% endblock %}
