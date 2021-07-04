@@ -50,8 +50,8 @@
 
         {% for item in orders %}
         <tr>
-            <td>{{item.time_slot}}</td>
-            <td>{{item.id}}</td>
+            <td>{{item.time_slot|date:'d.m H:i'}} Uhr</td>
+            <td><a href="/orders/{{item.id}}">{{item.id}}</a></td>
             <td>{{item.price_total}} €</td>
             <td>{{item.order_summary}}</td>
             <td>{{item.comments}}</td>
