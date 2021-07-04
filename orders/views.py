@@ -583,14 +583,99 @@ def order_lists_distribution(request, slot):
     # using SQL in django:
     # Person.objects.raw('SELECT * FROM myapp_person')
 
+import pandas as pd
+import numpy as np
 
 @login_required
 def order_lists_ettiketten(request):
-    """"""
-    qs = 0
-
+    start_query = '2021-07-18 10:00:00+02:00'
+    end_query = '2021-07-18 15:00:00+02:00'
+    qs = Order.objects.filter(
+        time_slot__gt=start_query,
+        time_slot__lt=end_query,
+        ).values(
+            "time_slot",
+            "id",
+            "price_total",
+            "order_summary",
+            "comments",
+            "name",
+            "phone",
+    ).order_by('time_slot')
+    df = pd.DataFrame(qs.values(
+        "time_slot",
+        "id",
+        "price_total",
+        "order_summary",
+        "name",
+        "comments",
+        "phone"
+    ))
+    day_order = [timezone.localtime(item["time_slot"]).strftime(
+        '%A, %d.%B.%y') for item in qs.values("time_slot")]
+    df['day_order'] = day_order
+    time_order = [timezone.localtime(item["time_slot"]).strftime(
+        '%H:%M') for item in qs.values("time_slot")]
+    df['time_order'] = time_order
+    fields = [
+        "time_order",
+        "day_order",
+        "id",
+        "price_total",
+        "order_summary",
+        "name",
+        "comments",
+        "phone"
+        ]
+    df = df[fields]
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=Etiketten.csv'
+    header = ["Abholzeit", "Abholtag", "Bestellnummer", "Preis", "Bestellung",
+              "Kommentar", "Name", "Telefon"]
+    df.to_csv(path_or_buf=response, sep=';', float_format='%.2f',
+              index=False, decimal=",", header=header)
+    return response
 
 @login_required
 def order_lists_pivot(request):
-    """"""
-    qs = 0
+   start_query = '2021-07-18 10:00:00+02:00'
+   end_query = '2021-07-18 15:00:00+02:00'
+   qs = Order.objects.filter(
+       time_slot__gt=start_query,
+       time_slot__lt=end_query,
+   ).values(
+       "time_slot",
+       "id",
+       "price_total",
+       "order_summary",
+       "comments",
+       "name",
+       "phone",
+   ).order_by('time_slot')
+   ordered_products = [i["ordered_products"]
+                       for i in qs.values("ordered_products")]
+
+   df = pd.DataFrame(qs.values(
+       "time_slot",
+       "id",
+       "price_total",
+       "order_summary",
+       "name",
+       "comments",
+       "phone"
+   ))
+   day_order = [timezone.localtime(item["time_slot"]).strftime(
+       '%A, %d.%B.%y') for item in qs.values("time_slot")]
+   df['day_order'] = day_order
+   time_order = [timezone.localtime(item["time_slot"]).strftime(
+       '%H:%M') for item in qs.values("time_slot")]
+   df['time_order'] = time_order
+   df_def = pd.DataFrame(ordered_products)
+
+   df = pd.concat([df, df_def], axis=1)
+   df = df.fillna(0)
+   table = pd.pivot_table(df, values=["Salat", "Pommes"], index=["time_slot"], aggfunc=np.sum, fill_value=0)
+#    print(table)
+   context = {'pivot': table.to_html,
+              }
+   return render(request, 'orders/pivot.html', context)

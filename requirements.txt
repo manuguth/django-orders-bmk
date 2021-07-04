@@ -9,3 +9,5 @@ psycopg2-binary
 xhtml2pdf==0.2.5
 pyyaml
 django-cookie-law
+numpy
+pandas
