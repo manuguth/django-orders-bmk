@@ -172,17 +172,25 @@ def get_pdf(order):
     file.close()
     return pdf
 
-def calculateprice(form_product_data, n_products=False):
+def calculateprice(form_product_data, n_products=False, get_summary=False):
     price = 0
     products = 0
+    summary = []
     for item in form_product_data:
         if form_product_data[item] is None:
             continue
         price += form_product_data[item] * Product.objects.get(short_title=item).price
         products += form_product_data[item]
-    
+        if get_summary:
+            summary.append(f"{item}({form_product_data[item]}x)")
+    if get_summary:
+        summary = ', '.join(summary)
     if n_products:
+        if get_summary:
+            return price, products, summary
         return price, products
+    if get_summary:
+        return price, summary
     return price
 
 
@@ -374,14 +382,6 @@ class order_detail_view(FormView):
 
 
 
-@login_required
-def order_overview_view(request):
-    """"""
-    orders = Order.objects.all()
-    return render(request, "orders/overview.html", 
-                  {'orders': orders})
-
-
 class order_detail_view(FormView):
     form_class = OrderProductEditForm
     success_url = '/orders/overview'
@@ -531,9 +531,66 @@ def UpdateInventory():
 
 
 @login_required
-def order_lists_distribution(request):
+def order_overview_view(request):
     """"""
-    qs = 0
+    orders = Order.objects.all()
+    return render(request, "orders/overview.html",
+                  {'orders': orders})
+
+
+@login_required
+def order_lists_distribution(request, slot):
+    sql_query = """
+        SELECT time_slot, price_total, order_summary, name, id, comments 
+        FROM orders_order 
+        WHERE price_total > 0  AND time_slot > '{}' AND time_slot < '{}'
+        ORDER BY time_slot ASC
+        """
+    day_label = ""
+    if slot == "sunday-lunch":
+        sql_query = sql_query.format(
+            '2021-07-18 10:00:00+02:00', '2021-07-18 15:00:00+02:00'
+            )
+        day_label = "Sonntag Mittag, 18.07.2021"
+    elif slot == "sunday-evening":
+        sql_query = sql_query.format(
+            '2021-07-18 15:00:00+02:00', '2021-07-18 20:00:00+02:00'
+            )
+        day_label = "Sonntag Abend, 18.07.2021"
+    elif slot == "monday-lunch":
+        sql_query = sql_query.format(
+            '2021-07-19 10:00:00+02:00', '2021-07-19 15:00:00+02:00'
+            )
+        day_label = "Montag Mittag, 19.07.2021"
+    else:
+        print("not found")
+    orders = Order.objects.raw(sql_query)
+    # orders = Order.objects.all().values("time_slot",
+    #                                     "id",
+    #                                     "price_total",
+    #                                     "order_summary",
+    #                                     "name",
+    #                                     "comments").order_by('time_slot')
+    return render(request, "orders/distribution-list-overview.html",
+                  {'orders': orders,
+                   "day_label": day_label
+                   })
     # qs = Order.objects.filter(time_slot=item.time_slot)
     # return render(request, "orders/overview.html",
     #               {'orders': orders})
+    # SQL query from google portal:
+    # "SELECT * WHERE G = 'Sonntag, 23.05.2021' AND I < timeofday '15:00:00' AND F > 1 ORDER BY I ASC"
+    # using SQL in django:
+    # Person.objects.raw('SELECT * FROM myapp_person')
+
+
+@login_required
+def order_lists_ettiketten(request):
+    """"""
+    qs = 0
+
+
+@login_required
+def order_lists_pivot(request):
+    """"""
+    qs = 0

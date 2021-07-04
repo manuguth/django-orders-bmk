@@ -33,29 +33,30 @@
     </style>
 </head>
 
-<h1> Bestellübersicht FestEssen ToGo</h1>
-<h4> Zum Bearbeiten der Bestellung auf den ID Link klicken.</h4>
-<br>
-<p>Neue Bestellungen können intern <a href="/orders/internal">hier</a> aufgegeben werden</p>
+<h1>Liste Essensausgabe - {{day_label}}</h1>
 
 <body>
 
     <table id="customers">
         <tr>
-            <th>Bestell ID</th>
-            <th>Name</th>
             <th>Abholzeit</th>
+            <th>ID</th>
             <th>Preis</th>
-            <th>Bestellbestätigung</th>
+            <th>Bestellung</th>
+            <th>Kommentar</th>
+            <th>Name</th>
+            <th>Abgeholt</th>
         </tr>
 
         {% for item in orders %}
         <tr>
-            <td><a href="{{item.id}}">{{item.id}}</a></td>
-            <td>{{item.name}}</td>
             <td>{{item.time_slot}}</td>
+            <td>{{item.id}}</td>
             <td>{{item.price_total}} €</td>
-            <td><a href="/download/{{item.order_hash}}">Download</a></td>
+            <td>{{item.order_summary}}</td>
+            <td>{{item.comments}}</td>
+            <td>{{item.name}}</td>
+            <td> </td>
 
         </tr>
      {% endfor %}

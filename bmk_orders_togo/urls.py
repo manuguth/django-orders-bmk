@@ -25,7 +25,8 @@ from orders.views import(
     render_pdf_view,
     order_overview_view,
     order_detail_view,
-    internnal_order_view
+    internnal_order_view,
+    order_lists_distribution
    )
 
 from accounts.views import (
@@ -40,6 +41,8 @@ urlpatterns = [
     path('success', SuccessView),
     path('download', render_pdf_view),
     path('orders/overview', order_overview_view),
+    # path('orders/distribution-list', order_lists_distribution),
+    path('orders/distribution-list/<slug:slot>', order_lists_distribution),
     # path('orders/<int:id>', order_detail_view.as_view(), name="form_order"),
     # path('orders/test', order_detail_view.as_view(), name="form_order"),
     # path('form/4/', order_detail_view.as_view(), name='form_4'),

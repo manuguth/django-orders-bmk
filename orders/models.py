@@ -1,6 +1,7 @@
 from django.db import models
 from decimal import Decimal
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
+from products.models import Product
 
 
 
@@ -14,6 +15,7 @@ class Order(models.Model):
     time_slot = models.DateTimeField(max_length=220)
     price_total = models.FloatField()
     ordered_products = models.JSONField(default=dict)
+    order_summary = models.CharField(max_length=400)
     n_ordered_products = models.IntegerField()
     order_hash = models.CharField(max_length=200)
     order_type = models.CharField(max_length=200, default="portal")
@@ -33,4 +35,26 @@ class Order(models.Model):
     # }
     # the ordered_products
     # mail, phone, comments, time slot, time stamp,
+    def calculate(self):
+        price = 0 
+        products = 0 
+        summary = []
+        for item in self.ordered_products:
+            if self.ordered_products[item] is None:
+                continue
+            price += self.ordered_products[item] * Product.objects.get(short_title=item).price
+            products += self.ordered_products[item]
+            summary.append(f"{item}({self.ordered_products[item]}x)")
+        summary = ', '.join(summary)
+        setattr(self, "price_total", price)
+        setattr(self, "n_ordered_products", products)
+        setattr(self, "order_summary", summary)
+        if summary != self.order_summary:
+            self.save()
+        return price, products, summary
     
+
+def order_post_save(sender, instance, *args, **kwargs):
+    instance.calculate()
+
+post_save.connect(order_post_save, sender=Order)
