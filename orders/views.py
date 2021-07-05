@@ -636,10 +636,35 @@ def order_lists_ettiketten(request):
               index=False, decimal=",", header=header)
     return response
 
-@login_required
-def order_lists_pivot(request):
-   start_query = '2021-07-18 10:00:00+02:00'
-   end_query = '2021-07-18 15:00:00+02:00'
+
+def getDayQuery(timeslot):
+    if timeslot == "sunday-lunch":
+        start_query = '2021-07-18 10:00:00+02:00'
+        end_query = '2021-07-18 15:00:00+02:00'
+        day_label = "Sonntag Mittag, 18.07.2021"
+        return start_query, end_query, day_label
+    elif timeslot == "sunday-evening":
+        start_query = '2021-07-18 15:00:00+02:00'
+        end_query = '2021-07-18 20:00:00+02:00'
+        day_label = "Sonntag Abend, 18.07.2021"
+        return start_query, end_query, day_label
+
+    elif timeslot == "monday-lunch":
+        start_query = '2021-07-19 10:00:00+02:00'
+        end_query = '2021-07-19 15:00:00+02:00'
+        day_label = "Montag Mittag, 19.07.2021"
+        return start_query, end_query, day_label
+
+    elif timeslot == "all":
+        start_query = '2021-07-18 10:00:00+02:00'
+        end_query = '2021-07-19 15:00:00+02:00'
+        day_label = "Gesamt"
+        return start_query, end_query, day_label
+
+
+# @login_required
+def order_lists_pivot(request, pivot, timeslot):
+   start_query, end_query, day_label = getDayQuery(timeslot)
    qs = Order.objects.filter(
        time_slot__gt=start_query,
        time_slot__lt=end_query,
@@ -674,8 +699,69 @@ def order_lists_pivot(request):
 
    df = pd.concat([df, df_def], axis=1)
    df = df.fillna(0)
-   table = pd.pivot_table(df, values=["Salat", "Pommes"], index=["time_slot"], aggfunc=np.sum, fill_value=0)
-#    print(table)
-   context = {'pivot': table.to_html,
-              }
-   return render(request, 'orders/pivot.html', context)
+   values = ["Salat", "Pommes", "SteakBrot", "SteakPom", "PuteBrot", "PutePommes",
+       "WurstWeckle", "WurstPommes", "CamembertWeckle", "CamembertPommes"]
+   
+   if pivot == 'pivot':
+        table = pd.pivot_table(df, values=values, index=[
+                            "day_order","time_order"], aggfunc=np.sum,
+                            margins=True,
+                            fill_value=0)
+        table = table.reindex(values, axis=1)
+        context = {'pivot': table.to_html,
+                    'updated': timezone.now(),
+                    'label': day_label
+                    }
+        return render(request, 'orders/pivot.html', context)
+
+   elif pivot == 'pivot-summary':
+        subcategories = {
+            "Salat": ["Salat"],
+            "Pommes": ["Pommes",
+                        "SteakPom",
+                        "PutePommes",
+                        "WurstPommes",
+                        "CamembertPommes",
+                        ],
+            "Steak": [
+                "SteakBrot",
+                "SteakPom",
+            ],
+            "Putensteak": [
+                "PuteBrot",
+                "PutePommes",
+            ],
+            "Wurst": [
+                "WurstWeckle",
+                "WurstPommes"
+            ],
+            "Camembert": [
+                "CamembertWeckle",
+                "CamembertPommes",
+                "CamembertPommes",
+            ],
+            "Brot": [
+                "SteakBrot",
+                "PuteBrot",
+            ],
+            "Weckle": [
+                "WurstWeckle"
+            ]}
+        for elem in subcategories:
+            df[elem] = df[subcategories[elem]].sum(axis=1)
+        values = list(subcategories.keys())
+        print(df[values].head)
+        table = pd.pivot_table(df, values=values, index=[
+                            "day_order","time_order"], aggfunc=np.sum,
+                            margins=True,
+                            fill_value=0)
+        table = table.reindex(values, axis=1)
+        context = {'pivot': table.to_html,
+                    'updated': timezone.now(),
+                    'label': day_label
+                    }
+        return render(request, 'orders/pivot.html', context)
+
+def pivotOverviewView(request):
+    return render(request, 'orders/pivot-overview.html')
+# TODO: statistics: per time slot, orders, amount of food
