@@ -750,7 +750,6 @@ def order_lists_pivot(request, pivot, timeslot):
         for elem in subcategories:
             df[elem] = df[subcategories[elem]].sum(axis=1)
         values = list(subcategories.keys())
-        print(df[values].head)
         table = pd.pivot_table(df, values=values, index=[
                             "day_order","time_order"], aggfunc=np.sum,
                             margins=True,
