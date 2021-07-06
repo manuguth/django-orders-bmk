@@ -858,3 +858,5 @@ def get_data(request, *args, **kwargs):
 # - Essen pro timeslots
 #   - sunday-lunch, sunday-evening, monday-lunch
 # order_type pie chart
+# table with per day orders and limit
+# detailed table
