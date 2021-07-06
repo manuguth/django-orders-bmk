@@ -478,6 +478,7 @@ class internnal_order_view(FormView):
             ordered_products=products,
             order_hash=order_hash,
             n_ordered_products=n_ordered_products,
+            order_type=form_data["order_type"],
         )
         order.save()
         # retrieve order ID and set variable
