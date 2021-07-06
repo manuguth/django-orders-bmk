@@ -23,6 +23,7 @@ class Command(BaseCommand):
             else:
                 inventory = Inventory(
                     time_slot=class_date,
+                    day_slot=item["day_slot"],
                 )
                 inventory.save()
                 self.stdout.write(self.style.SUCCESS(
