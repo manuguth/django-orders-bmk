@@ -755,6 +755,10 @@ def order_lists_pivot(request, pivot, timeslot):
                             "day_order","time_order"], aggfunc=np.sum,
                             margins=True,
                             fill_value=0)
+        # print(pd.pivot_table(df, values=values, index=[
+        #     "day_order"], aggfunc=np.sum,
+        #     margins=True,
+        #     fill_value=0).reset_index().query('day_order=="All"'))
         table = table.reindex(values, axis=1)
         context = {'pivot': table.to_html,
                     'updated': timezone.now(),
@@ -860,3 +864,44 @@ def get_data(request, *args, **kwargs):
 # order_type pie chart
 # table with per day orders and limit
 # detailed table
+
+
+def TableOverviewView(request, timeslot):
+    template = "orders/orders_overview.html"
+    start_query, end_query, day_label = getDayQuery(timeslot)
+    qs = Order.objects.filter(
+        time_slot__gt=start_query,
+        time_slot__lt=end_query,
+    ).values(
+        "time_slot",
+        "id",
+        "price_total",
+        "order_summary",
+        "comments",
+        "name",
+        "phone",
+    ).order_by('time_slot')
+    ordered_products = [i["ordered_products"]
+                        for i in qs.values("ordered_products")]
+
+    df = pd.DataFrame(qs.values(
+        "time_slot",
+        "id",
+        "price_total",
+        "order_summary",
+        "name",
+        "comments",
+        "phone"
+    ))
+    day_order = [timezone.localtime(item["time_slot"]).strftime(
+        '%A, %d.%B.%y') for item in qs.values("time_slot")]
+    df['day_order'] = day_order
+    time_order = [timezone.localtime(item["time_slot"]).strftime(
+        '%H:%M') for item in qs.values("time_slot")]
+    df['time_order'] = time_order
+    df_def = pd.DataFrame(ordered_products)
+
+    df = pd.concat([df, df_def], axis=1)
+    df = df.fillna(0)
+    values = ["Salat", "Pommes", "SteakBrot", "SteakPom", "PuteBrot", "PutePommes",
+        "WurstWeckle", "WurstPommes", "CamembertWeckle", "CamembertPommes"]
