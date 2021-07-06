@@ -30,6 +30,8 @@ from orders.views import(
     order_lists_ettiketten,
     order_lists_pivot,
     pivotOverviewView,
+    CharView,
+    get_data,
    )
 
 from accounts.views import (
@@ -47,6 +49,10 @@ urlpatterns = [
     # path('orders/distribution-list', order_lists_distribution),
     path('orders/etiketten', order_lists_ettiketten),
     path('orders/pivot-overview', pivotOverviewView),
+    # path('orders/statistics', statChartView),
+    path('orders/statistics', CharView.as_view()),
+    path('api', get_data),
+    
     path('orders/<slug:pivot>/<slug:timeslot>', order_lists_pivot),
     path('orders/distribution-list/<slug:slot>', order_lists_distribution),
     # path('orders/<int:id>', order_detail_view.as_view(), name="form_order"),

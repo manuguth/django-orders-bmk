@@ -3,8 +3,9 @@ import os
 import secrets
 from django.db import connection
 from django.shortcuts import render, redirect
+from django.views.generic import View
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from formtools.wizard.views import SessionWizardView
 from django.core.mail import EmailMessage
 from django.core import mail
@@ -764,3 +765,96 @@ def order_lists_pivot(request, pivot, timeslot):
 def pivotOverviewView(request):
     return render(request, 'orders/pivot-overview.html')
 # TODO: statistics: per time slot, orders, amount of food
+
+
+class CharView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'orders/stat-charts.html')
+
+
+def get_data(request, *args, **kwargs):
+    start_query, end_query, day_label = getDayQuery("all")
+    qs = Order.objects.filter(
+        time_slot__gt=start_query,
+        time_slot__lt=end_query,
+        price_total__gt=0,
+    ).values(
+        "time_slot",
+        "price_total",
+        "n_ordered_products",
+        "time_stamp",
+        "order_type",
+    ).order_by('time_stamp')
+    df = pd.DataFrame(qs.values(
+        "time_slot",
+        "price_total",
+        "n_ordered_products",
+        "time_stamp",
+        "order_type",
+   ))
+
+    day_order = [timezone.localtime(item["time_slot"]).strftime(
+        '%y-%m-%d') for item in qs.values("time_slot")]
+    df['day_order'] = day_order
+    time_order = [timezone.localtime(item["time_slot"]).strftime(
+       '%H:%M') for item in qs.values("time_slot")]
+    df['time_order'] = time_order
+    ordered = [timezone.localtime(item["time_stamp"]).strftime(
+        '%y-%m-%d') for item in qs.values("time_stamp")]
+    df['ordered'] = ordered
+    df['count'] = np.ones(len(df))
+    df = df.fillna(0)
+    df_grouped_accu = df.groupby(['ordered']).sum().cumsum().reset_index()
+    df_grouped = df.groupby(['ordered']).sum().reset_index()
+    
+    df_time_slot_grouped = df.groupby(
+        ['day_order', 'time_order']).sum().reset_index()
+    df_type_grouped = df.groupby(['order_type']).sum().reset_index()
+    
+    data = {
+        "n_orders_accu":{
+            "labels": list(df_grouped_accu["ordered"].values),
+            "chartLabel": "Bestellungen kumuliert",
+            "chartdata": list(df_grouped_accu["count"].values),
+        },
+        "n_orders_day":{
+            "labels": list(df_grouped["ordered"].values),
+            "chartLabel": "Bestellungen pro Tag",
+            "chartdata": list(df_grouped["count"].values),
+        },
+        "n_products_accu":{
+            "labels": list(df_grouped_accu["ordered"].values),
+            "chartLabel": "Essensbestellungen kumuliert",
+            "chartdata": list(df_grouped_accu["n_ordered_products"].astype(float).values),
+        },
+        "n_products_day":{
+            "labels": list(df_grouped["ordered"].values),
+            "chartLabel": "Essensbestellungen pro Tag",
+            "chartdata": list(df_grouped["n_ordered_products"].astype(float).values),
+        },
+        "timeslot_sunday":{
+            "labels": list(df_time_slot_grouped.query('day_order=="21-07-18"')["time_order"].values),
+            "chartLabel": "Essen pro Timeslot",
+            "chartdata": list(df_time_slot_grouped.query('day_order=="21-07-18"')["n_ordered_products"].astype(float).values),
+        },
+        "timeslot_monday":{
+            "labels": list(df_time_slot_grouped.query('day_order=="21-07-19"')["time_order"].values),
+            "chartLabel": "Essen pro Timeslot",
+            "chartdata": list(df_time_slot_grouped.query('day_order=="21-07-19"')["n_ordered_products"].astype(float).values),
+        },
+        "order_type": {
+            "labels": list(df_type_grouped["order_type"].values),
+            "chartLabel": "Bestellform",
+            "chartdata": list(df_type_grouped["count"].values),
+        },
+    }
+    return JsonResponse(data) # http response
+
+
+# statistics:
+# - #bestellungen pro Tag kumuliert 
+# - bestellte Essen pro Tag kumuliert
+# - Einnahmen pro Tag kumuliert
+# - Essen pro timeslots
+#   - sunday-lunch, sunday-evening, monday-lunch
+# order_type pie chart
