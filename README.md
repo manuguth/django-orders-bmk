@@ -24,3 +24,6 @@ it is possible to add timeslots from a yaml file via
 ```
 python manage.py addtimeslots scripts/timeslots.yaml
 ```
+
+deleting table in db and adding reinitialising it:
+https://stackoverflow.com/questions/33259477/how-to-recreate-a-deleted-table-with-django-migrations/37369497#37369497
