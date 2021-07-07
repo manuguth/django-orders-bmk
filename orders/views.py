@@ -537,7 +537,9 @@ def order_overview_view(request):
     """"""
     orders = Order.objects.all()
     return render(request, "orders/overview.html",
-                  {'orders': orders})
+                  {'orders': orders,
+                   'updated': timezone.now()
+                   })
 
 
 @login_required
@@ -763,7 +765,7 @@ def order_lists_pivot(request, pivot, timeslot):
         table = table.reindex(values, axis=1)
         context = {'pivot': table.to_html,
                     'updated': timezone.now(),
-                    'label': day_label
+                    'label': day_label,
                     }
         return render(request, 'orders/pivot.html', context)
 
@@ -866,9 +868,55 @@ def get_data(request, *args, **kwargs):
 # table with per day orders and limit
 # detailed table
 
+@login_required
+def TableOverviewView(request):
+    template = "orders/table_overview.html"
+    df, category_values, subcategory_values = GetSummaryStats("all")
+    df_sun_lunch, _, _ = GetSummaryStats("sunday-lunch")
+    df_sun_evening, _, _ = GetSummaryStats("sunday-evening")
+    df_mon_lunch, _, _ = GetSummaryStats("monday-lunch")
+    
+    df_category = df[category_values].sum(axis=0).reset_index()
+    df_category.columns = ["product", "count"]
+    df_sun_lunch_category = df_sun_lunch[category_values].sum(axis=0).reset_index()
+    df_sun_lunch_category.columns = ["product", "count"]
+    df_category["sun_lunch"] = df_sun_lunch_category["count"]
+    df_sun_evening_category = df_sun_evening[category_values].sum(axis=0).reset_index()
+    df_sun_evening_category.columns = ["product", "count"]
+    df_category["sun_evening"] = df_sun_evening_category["count"]
+    df_mon_lunch_category = df_mon_lunch[category_values].sum(axis=0).reset_index()
+    df_mon_lunch_category.columns = ["product", "count"]
+    df_category["mon_lunch"] = df_mon_lunch_category["count"]
+    category_all = df_category.to_dict('records')
+    total = {'product': 'Gesamt',
+                         'count': df_category["count"].sum(),
+                        'sun_lunch': df_category["sun_lunch"].sum(),
+                        'sun_evening': df_category["sun_evening"].sum(),
+                        'mon_lunch': df_category["mon_lunch"].sum()}
+   
+    df = df[subcategory_values].sum(axis=0).reset_index()
+    df.columns = ["product", "count"]
+    df_sun_lunch = df_sun_lunch[subcategory_values].sum(axis=0).reset_index()
+    df_sun_lunch.columns = ["product", "count"]
+    df["sun_lunch"] = df_sun_lunch["count"]
+    df_sun_evening = df_sun_evening[subcategory_values].sum(axis=0).reset_index()
+    df_sun_evening.columns = ["product", "count"]
+    df["sun_evening"] = df_sun_evening["count"]
+    df_mon_lunch = df_mon_lunch[subcategory_values].sum(axis=0).reset_index()
+    df_mon_lunch.columns = ["product", "count"]
+    df["mon_lunch"] = df_mon_lunch["count"]
+    subcategory_all = df.to_dict('records')
+    context = {
+        "category_all": category_all,
+        "subcategory_all": subcategory_all,
+        "total": total,
+        'updated': timezone.now()
+        }
 
-def TableOverviewView(request, timeslot):
-    template = "orders/orders_overview.html"
+    return render(request, template, context)
+    
+    
+def GetSummaryStats(timeslot):
     start_query, end_query, day_label = getDayQuery(timeslot)
     qs = Order.objects.filter(
         time_slot__gt=start_query,
@@ -904,5 +952,46 @@ def TableOverviewView(request, timeslot):
 
     df = pd.concat([df, df_def], axis=1)
     df = df.fillna(0)
-    values = ["Salat", "Pommes", "SteakBrot", "SteakPom", "PuteBrot", "PutePommes",
+    category_values = ["Salat", "Pommes", "SteakBrot", "SteakPom", "PuteBrot", "PutePommes",
         "WurstWeckle", "WurstPommes", "CamembertWeckle", "CamembertPommes"]
+    
+    subcategories = {
+        "Salat": ["Salat"],
+            "Pommes-gesamt": ["Pommes",
+                       "SteakPom",
+                        "PutePommes",
+                        "WurstPommes",
+                        "CamembertPommes",
+                       ],
+            "Steak": [
+                "SteakBrot",
+                "SteakPom",
+            ],
+        "Putensteak": [
+                "PuteBrot",
+                "PutePommes",
+            ],
+        "Wurst": [
+                "WurstWeckle",
+                "WurstPommes"
+            ],
+        "Camembert": [
+                "CamembertWeckle",
+                "CamembertPommes",
+                "CamembertPommes",
+            ],
+        "Brot": [
+                "SteakBrot",
+                "PuteBrot",
+            ],
+        "Weckle": [
+                "WurstWeckle"
+            ]}
+    for elem in subcategories:
+        df[elem] = df[subcategories[elem]].sum(axis=1)
+    subcategory_values = list(subcategories.keys())
+    
+    df = df[category_values + subcategory_values]
+    # removing duplicated columns -> in this case "Salat"
+    df = df.loc[:, ~df.columns.duplicated()]
+    return df, category_values, subcategory_values

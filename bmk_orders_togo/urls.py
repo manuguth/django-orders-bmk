@@ -32,6 +32,7 @@ from orders.views import(
     pivotOverviewView,
     CharView,
     get_data,
+    TableOverviewView,
    )
 
 from accounts.views import (
@@ -46,6 +47,7 @@ urlpatterns = [
     path('success', SuccessView),
     path('download', render_pdf_view),
     path('orders/overview', order_overview_view),
+    path('orders/table-overview', TableOverviewView),
     # path('orders/distribution-list', order_lists_distribution),
     path('orders/etiketten', order_lists_ettiketten),
     path('orders/pivot-overview', pivotOverviewView),
