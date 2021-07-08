@@ -954,7 +954,7 @@ def GetSummaryStats(timeslot):
         "WurstWeckle", "WurstPommes", "CamembertWeckle", "CamembertPommes"]
     
     subcategories = {
-        # "Salat": ["Salat"],
+        "Salat": ["Salat"],
         "Pommes-gesamt": ["Pommes",
                     "SteakPom",
                     "PutePommes",
@@ -987,7 +987,7 @@ def GetSummaryStats(timeslot):
             ]}
     for elem in subcategories:
         df[elem] = df[subcategories[elem]].sum(axis=1)
-    subcategory_values = list(subcategories.keys()) + ["Salat"]
+    subcategory_values = list(subcategories.keys())
     
     df = df[category_values + subcategory_values]
     # removing duplicated columns -> in this case "Salat"
