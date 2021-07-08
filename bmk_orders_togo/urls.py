@@ -49,7 +49,7 @@ urlpatterns = [
     path('orders/overview', order_overview_view),
     path('orders/table-overview', TableOverviewView),
     # path('orders/distribution-list', order_lists_distribution),
-    path('orders/etiketten', order_lists_ettiketten),
+    path('orders/etiketten/<slug:timeslot>', order_lists_ettiketten),
     path('orders/pivot-overview', pivotOverviewView),
     # path('orders/statistics', statChartView),
     path('orders/statistics', CharView.as_view()),

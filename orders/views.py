@@ -591,9 +591,8 @@ import pandas as pd
 import numpy as np
 
 @login_required
-def order_lists_ettiketten(request):
-    start_query = '2021-07-18 10:00:00+02:00'
-    end_query = '2021-07-18 15:00:00+02:00'
+def order_lists_ettiketten(request, timeslot):
+    start_query, end_query, _ = getDayQuery(timeslot)
     qs = Order.objects.filter(
         time_slot__gt=start_query,
         time_slot__lt=end_query,
@@ -633,7 +632,7 @@ def order_lists_ettiketten(request):
         ]
     df = df[fields]
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=Etiketten.csv'
+    response['Content-Disposition'] = f'attachment; filename=Etiketten_{timeslot}.csv'
     header = ["Abholzeit", "Abholtag", "Bestellnummer", "Preis", "Bestellung",
               "Kommentar", "Name", "Telefon"]
     df.to_csv(path_or_buf=response, sep=';', float_format='%.2f',
