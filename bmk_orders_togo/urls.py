@@ -55,8 +55,8 @@ urlpatterns = [
     path('orders/statistics', CharView.as_view()),
     path('api', get_data),
     
-    path('orders/<slug:pivot>/<slug:timeslot>', order_lists_pivot),
     path('orders/distribution-list/<slug:slot>', order_lists_distribution),
+    path('orders/<slug:pivot>/<slug:timeslot>', order_lists_pivot),
     # path('orders/<int:id>', order_detail_view.as_view(), name="form_order"),
     # path('orders/test', order_detail_view.as_view(), name="form_order"),
     # path('form/4/', order_detail_view.as_view(), name='form_4'),

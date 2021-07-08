@@ -868,7 +868,6 @@ def get_data(request, *args, **kwargs):
 # table with per day orders and limit
 # detailed table
 
-@login_required
 def TableOverviewView(request):
     template = "orders/table_overview.html"
     df, category_values, subcategory_values = GetSummaryStats("all")
