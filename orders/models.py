@@ -48,8 +48,6 @@ class Order(models.Model):
         summary = ', '.join(summary)
         setattr(self, "price_total", price)
         setattr(self, "n_ordered_products", products)
-        print("I AM HERE!!!")
-        print(summary)
         if summary != self.order_summary:
             setattr(self, "order_summary", summary)
             self.save()
