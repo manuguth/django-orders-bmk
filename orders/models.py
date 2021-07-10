@@ -40,7 +40,7 @@ class Order(models.Model):
         products = 0 
         summary = []
         for item in self.ordered_products:
-            if self.ordered_products[item] is None:
+            if (self.ordered_products[item] is None) or (self.ordered_products[item]==0):
                 continue
             price += self.ordered_products[item] * Product.objects.get(short_title=item).price
             products += self.ordered_products[item]
@@ -48,8 +48,10 @@ class Order(models.Model):
         summary = ', '.join(summary)
         setattr(self, "price_total", price)
         setattr(self, "n_ordered_products", products)
-        setattr(self, "order_summary", summary)
+        print("I AM HERE!!!")
+        print(summary)
         if summary != self.order_summary:
+            setattr(self, "order_summary", summary)
             self.save()
         return price, products, summary
     
