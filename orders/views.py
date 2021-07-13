@@ -634,7 +634,7 @@ def order_lists_ettiketten(request, timeslot):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename=Etiketten_{timeslot}.csv'
     header = ["Abholzeit", "Abholtag", "Bestellnummer", "Preis", "Bestellung",
-              "Kommentar", "Name", "Telefon"]
+              "Name", "Kommentar",  "Telefon"]
     df.to_csv(path_or_buf=response, sep=';', float_format='%.2f',
               index=False, decimal=",", header=header)
     return response
