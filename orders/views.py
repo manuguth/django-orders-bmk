@@ -456,9 +456,9 @@ class internnal_order_view(FormView):
     context_object_name = 'order'
 
     def form_valid(self, form):
-        qs = Product.objects.all()
+        qs = Product.objects.all().order_by("id")
         fields = [[i.short_title, i.display_order, i.id] for i in qs]
-        fields = sorted(fields, key=lambda l: l[1])
+        # fields = sorted(fields, key=lambda l: l[1])
         field_names = [i[0] for i in fields]
         form_data = form.cleaned_data
         products = {
