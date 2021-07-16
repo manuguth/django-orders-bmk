@@ -985,6 +985,7 @@ def GetSummaryStats(timeslot):
             ],
         "Weckle": [
                 "WurstWeckle"
+                "CamembertWeckle"
             ]}
     for elem in subcategories:
         df[elem] = df[subcategories[elem]].sum(axis=1)
