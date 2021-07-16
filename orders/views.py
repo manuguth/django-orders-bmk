@@ -374,6 +374,9 @@ class OrderWizard(SessionWizardView):
 def SuccessView(request):
     return render(request, "orders/success.html")
 
+def ClosedOrdersView(request):
+    return render(request, "orders/closed_orders.html")
+
 
 # @login_required
 class order_detail_view(FormView):

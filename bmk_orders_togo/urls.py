@@ -19,6 +19,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+import locale
+
 from orders.views import(
     SuccessView,
     OrderWizard,
@@ -33,6 +37,7 @@ from orders.views import(
     CharView,
     get_data,
     TableOverviewView,
+    ClosedOrdersView,
    )
 
 from accounts.views import (
@@ -42,8 +47,6 @@ from accounts.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', OrderWizard.as_view()),
-    path('bestellung/', OrderWizard.as_view()),
     path('success', SuccessView),
     path('download', render_pdf_view),
     path('orders/overview', order_overview_view),
@@ -66,3 +69,20 @@ urlpatterns = [
     path('login/', login_view),
     path('logout/', logout_view),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+orderviews = [
+    path('bestellung/', OrderWizard.as_view()),
+    path('', OrderWizard.as_view())
+]
+
+order_time_limit = parse_datetime('2021-07-16 13:49:00+02:00')
+orders_closed = timezone.now() > order_time_limit
+
+if orders_closed:
+    orderviews = [
+        path('bestellung/', ClosedOrdersView),
+        path('', ClosedOrdersView)
+    ]
+
+urlpatterns = orderviews + urlpatterns
