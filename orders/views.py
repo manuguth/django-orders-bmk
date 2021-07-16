@@ -984,7 +984,7 @@ def GetSummaryStats(timeslot):
                 "PuteBrot",
             ],
         "Weckle": [
-                "WurstWeckle"
+                "WurstWeckle",
                 "CamembertWeckle"
             ]}
     for elem in subcategories:
