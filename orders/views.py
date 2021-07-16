@@ -748,6 +748,7 @@ def order_lists_pivot(request, pivot, timeslot):
                 "PuteBrot",
             ],
             "Weckle": [
+                "CamembertWeckle",
                 "WurstWeckle"
             ]}
         for elem in subcategories:
