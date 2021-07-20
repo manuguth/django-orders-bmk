@@ -71,8 +71,32 @@
     <div class="row">
         <div class="col-md-6">
              <div>
+                <center class="row">
+                    <h4>Anzahl Bestellungen</h4>
+                </center>
             <canvas id="myChartPieOrderType"></canvas>
         </div>
+        </div>
+        <div class="col-md-6">
+             <div>
+            <center class="row">
+                <h4>Anzahl Essen</h4>
+            </center>
+
+            <canvas id="myChartPieOrderTypeWeighted"></canvas>
+        </div>
+        </div>
+    </div>
+    <br>
+    <center class="row">
+    <h1>Preis</h1>
+</center>
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="myChartlinePrice"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="myChartBarPrice"></canvas>
         </div>
     </div>
 
@@ -87,11 +111,14 @@
             success: function (data) {
                 drawLineGraph(data.n_orders_accu, 'myChartline');
                 drawBarGraph(data.n_orders_day, 'myChartBar');
+                drawLineGraph(data.price_accu, 'myChartlinePrice');
+                drawBarGraph(data.price_day, 'myChartBarPrice');
                 drawLineGraph(data.n_products_accu, 'myChartlineFood');
                 drawBarGraph(data.n_products_day, 'myChartBarFood');
                 drawBarGraph(data.timeslot_sunday, 'myChartBarTimeslotSun');
                 drawBarGraph(data.timeslot_monday, 'myChartBarTimeslotMon');
                 drawPieChart(data.order_type, 'myChartPieOrderType');
+                drawPieChart(data.order_type_weighted, 'myChartPieOrderTypeWeighted');
                 console.log("drawing");
             },
             error: function (error_data) {

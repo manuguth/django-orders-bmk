@@ -813,6 +813,7 @@ def get_data(request, *args, **kwargs):
         '%y-%m-%d') for item in qs.values("time_stamp")]
     df['ordered'] = ordered
     df['count'] = np.ones(len(df))
+    df['count_weighted'] = np.ones(len(df)) * df["n_ordered_products"]
     df = df.fillna(0)
     df_grouped_accu = df.groupby(['ordered']).sum().cumsum().reset_index()
     df_grouped = df.groupby(['ordered']).sum().reset_index()
@@ -856,6 +857,21 @@ def get_data(request, *args, **kwargs):
             "labels": list(df_type_grouped["order_type"].values),
             "chartLabel": "Bestellform",
             "chartdata": list(df_type_grouped["count"].values),
+        },
+        "order_type_weighted": {
+            "labels": list(df_type_grouped["order_type"].values),
+            "chartLabel": "Bestellform gewichtet",
+            "chartdata": list(df_type_grouped["count_weighted"].values),
+        },
+        "price_accu": {
+            "labels": list(df_grouped_accu["ordered"].values),
+            "chartLabel": "Bestellungen kumuliert",
+            "chartdata": list(df_grouped_accu["price_total"].values),
+        },
+        "price_day": {
+            "labels": list(df_grouped["ordered"].values),
+            "chartLabel": "Bestellungen pro Tag",
+            "chartdata": list(df_grouped["price_total"].values),
         },
     }
     return JsonResponse(data) # http response
