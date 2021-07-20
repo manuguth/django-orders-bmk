@@ -27,3 +27,7 @@ python manage.py addtimeslots scripts/timeslots.yaml
 
 deleting table in db and adding reinitialising it:
 https://stackoverflow.com/questions/33259477/how-to-recreate-a-deleted-table-with-django-migrations/37369497#37369497
+
+
+
+dumping and loading data: https://coderwall.com/p/mvsoyg/django-dumpdata-and-loaddata
