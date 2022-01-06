@@ -16,21 +16,21 @@
 <h2> Bitte wählen Sie ihr Essen aus</h1>
     <p> Nachdem das Bugginger Fescht auch dieses Jahr leider wieder abgesagt wurde, bieten wir Ihnen am
     Festwochenende einige der beliebtesten Gerichte zum Abholen an.</p>
-    
+
     <p>Zu diesen Zeiten bereiten wir gerne Ihr Essen zu:</p>
     <ul>
         <li> Sonntag, 18.07.2021, von 11.30 Uhr bis 14.00 Uhr und von 17.00 Uhr bis 19.00 Uhr</li>
         <li> Montag, 19.07.2021, von 11.30 Uhr bis 14.00 Uhr</li>
     </ul>
-    
-    <p>Sie können über dieses Bestellformular Ihr Essen bestellen und zum ausgewählten Zeitpunkt am alten Bauhof (gegenüber vom Rathaus Buggingen) abholen. 
+
+    <p>Sie können über dieses Bestellformular Ihr Essen bestellen und zum ausgewählten Zeitpunkt am alten Bauhof (gegenüber vom Rathaus Buggingen) abholen.
         Per E-Mail erhalten Sie eine Bestellbestätigung.
-    
+
     <p>Bitte wählen Sie unten die Anzahl der gewünschten Gerichte aus.</p>
-    
+
     <p>Wir freuen uns auf Ihre Bestellung!</p>
     <p style="margin-bottom:1.5cm;">Ihre Bergmannskapelle Buggingen e.V. </p>
-    
+
 <!-- <p>Schritt {{ wizard.steps.step1 }} von {{ wizard.steps.count }}</p> -->
 <form action="" method="post">{% csrf_token %}
     <table>
@@ -51,5 +51,5 @@
     <input class="btn btn-primary" type="submit" value="{% trans " weiter" %}" />
 </form>
 
-
+<br>
 {% endblock %}
