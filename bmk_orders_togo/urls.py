@@ -57,7 +57,7 @@ urlpatterns = [
     # path('orders/statistics', statChartView),
     path('orders/statistics', CharView.as_view()),
     path('api', get_data),
-    
+
     path('orders/distribution-list/<slug:slot>', order_lists_distribution),
     path('orders/<slug:pivot>/<slug:timeslot>', order_lists_pivot),
     # path('orders/<int:id>', order_detail_view.as_view(), name="form_order"),
@@ -76,13 +76,13 @@ orderviews = [
     path('', OrderWizard.as_view())
 ]
 
-order_time_limit = parse_datetime('2021-07-16 13:49:00+02:00')
-orders_closed = timezone.now() > order_time_limit
+# order_time_limit = parse_datetime('2021-07-16 13:49:00+02:00')
+# orders_closed = timezone.now() > order_time_limit
 
-if orders_closed:
-    orderviews = [
-        path('bestellung/', ClosedOrdersView),
-        path('', ClosedOrdersView)
-    ]
+# if orders_closed:
+#     orderviews = [
+#         path('bestellung/', ClosedOrdersView),
+#         path('', ClosedOrdersView)
+#     ]
 
 urlpatterns = orderviews + urlpatterns
