@@ -17,7 +17,7 @@ if 'WEBSITE_HOSTNAME' not in os.environ:
 elif 'WEBSITE_HOSTNAME' in os.environ:
     locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 
-    
+
 
 def boldlabel(label):
     return mark_safe(f"<strong>{label}</strong>")
@@ -25,7 +25,7 @@ def boldlabel(label):
 class OrderModelForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-          
+
     name = forms.CharField(max_length=220,
                             label=boldlabel('Name'),
                             widget=forms.TextInput(attrs={'placeholder': 'Bitte tragen Sie ihren Namen hier ein.'}))
@@ -41,10 +41,10 @@ class OrderModelForm(forms.Form):
         label=boldlabel('Kommentar'),
                                widget=forms.TextInput(attrs={'placeholder': 'Möchten Sie uns noch etwas zu Ihrer Bestellung mitteilen?'}), required=False)
     check_me_out = forms.BooleanField(required=True, label=boldlabel("Zustimmung zur Verwendung der Kontaktdaten für den Zweck der Bestellung."), help_text="Wir verwenden Ihre Kontaktdaten nur für den Zweck Ihrer Bestellung und geben Sie nicht an Dritte weiter.")
-    
 
-class OrderProductForm(forms.Form):  
-    
+
+class OrderProductForm(forms.Form):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         qs = Product.objects.all()
@@ -52,11 +52,11 @@ class OrderProductForm(forms.Form):
         fields = sorted(fields, key=lambda l: l[1])
         field_names = [i[0] for i in fields]
         field_ids = [i[2] for i in fields]
-        
+
         for i in range(len(qs)):
             entry = Product.objects.get(id=field_ids[i])
             field_name = entry.short_title
-            self.fields[field_name] = forms.IntegerField(max_value=40, 
+            self.fields[field_name] = forms.IntegerField(max_value=40,
                 min_value=0,
                 required=False,
                 label=boldlabel(f"{entry.title} - {entry.price} €"),
@@ -71,7 +71,7 @@ class OrderTimeSlotForm(forms.Form):
         super().__init__(*args, **kwargs)
         qs = Inventory.objects.all()
         slots = self.GetTimeSlots(qs)
-        
+
         STATES = (
             ('', 'Wählen Sie Ihre Abholzeit...'),
             *slots
@@ -89,7 +89,7 @@ class OrderTimeSlotForm(forms.Form):
                 slots.append(
                     (entry.time_slot, class_date.strftime("%A %d. %B %H:%M")))
         return sorted(slots)
-    
+
 
 class OrderCheckoutForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -168,7 +168,7 @@ class OrderProductEditForm(forms.Form):
         self.fields["comments"] = forms.CharField(max_length=220,
                                 label=boldlabel('Kommentar'),
                                 initial=order.comments, required=False)
-        
+
         qs_inventory = Inventory.objects.all()
         slots = self.GetTimeSlots(qs_inventory)
 
@@ -178,7 +178,7 @@ class OrderProductEditForm(forms.Form):
                                                      initial=order.time_slot)
         self.fields["send_mail"] = forms.BooleanField(required=False, label="Bestätigungsmail mit Änderungen senden")
         custom_message = f"""
-Guten Tag {order.name}, 
+Guten Tag {order.name},
 
 Wir haben wie gewünscht Ihre Bestellung geändert. Anbei erhalten Sie Ihre aktualisierte Bestellbestätigung als pdf-Datei.
 
@@ -252,20 +252,20 @@ class OrderProductInternalForm(forms.Form):
         self.fields["name"] = forms.CharField(max_length=220,
                             label=boldlabel('Name'))
         self.fields["email"] = forms.EmailField(max_length=220,
-                                label=boldlabel('E-Mail Adresse'), 
+                                label=boldlabel('E-Mail Adresse'),
                                 initial="bestellung@bmk-buggingen.de")
         self.fields["phone"] = forms.CharField(max_length=220,
                                 label=boldlabel('Telefonnummer'))
         self.fields["comments"] = forms.CharField(max_length=220,
                                 label=boldlabel('Kommentar'), required=False)
-        
+
         qs_inventory = Inventory.objects.all()
         slots = self.GetTimeSlots(qs_inventory)
 
         STATES = tuple(slots)
 
         self.fields["time_slot"] = forms.ChoiceField(choices=STATES, label=boldlabel("Abholzeit"))
-        
+
         ORDERSTATES = (
             ("portal", "Portal"),
             ("phone", "Telefon"),
