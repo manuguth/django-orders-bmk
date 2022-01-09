@@ -90,6 +90,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': str(BASE_DIR / 'db.sqlite3'),
+    },
+    'users_db': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(BASE_DIR / 'db.sqlite3_users_db'),
     }
 }
 
@@ -146,7 +150,7 @@ EMAIL_HOST = os.environ['EMAIL_HOST'] if 'EMAIL_HOST' in os.environ else ""
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER'] if 'EMAIL_HOST_USER' in os.environ else ""
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD'] if 'EMAIL_HOST_PASSWORD' in os.environ else "" 
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD'] if 'EMAIL_HOST_PASSWORD' in os.environ else ""
 MAILER_LIST = ["bestellung@bmk-buggingen.de"]
 DEFAULT_FROM_EMAIL = "bestellung@bmk-buggingen.de"
 

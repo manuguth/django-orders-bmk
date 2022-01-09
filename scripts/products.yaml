@@ -1,0 +1,21 @@
+- title: 'Putensteak mit Pommes Frites'
+  short_title: 'PutePommes'
+  description: 'mit Curry-Dip und Ketchup'
+  price: 8.00
+  display_order: 6
+  limit_per_timeslot: Null
+  category: 'Essen'
+- title: 'Schweinesteak mit Brot'
+  short_title: 'SteakBrot'
+  description: 'mit Kräuterbutter'
+  price: 6.00
+  display_order: 3
+  limit_per_timeslot: Null
+  category: 'Essen'
+- title: 'Großer Salat'
+  short_title: 'Salatgross'
+  description: 'mit Bacon'
+  price: 6.00
+  display_order: 10
+  limit_per_timeslot: Null
+  category: 'Essen'

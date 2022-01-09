@@ -9,6 +9,7 @@ ADMINS = [('Manuel', 'bestellung@bmk-buggingen.de')]
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME'], "127.0.0.1",
                  "bestellung.bmk-buggingen.de",
                  "www.bestellung.bmk-buggingen.de",
+                 "169.254.130.5",
                  ] if 'WEBSITE_HOSTNAME' in os.environ else []
 
 # WhiteNoise configuration
@@ -24,7 +25,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # DBHOST is only the server name, not the full URL
 hostname = os.environ['DBHOST']
@@ -38,6 +39,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['DBNAME'],
+        'HOST': hostname + ".postgres.database.azure.com",
+        'USER': os.environ['DBUSER'] + "@" + hostname,
+        'PASSWORD': os.environ['DBPASS']
+    },
+    'users_db': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['DBNAME_USERS'],
         'HOST': hostname + ".postgres.database.azure.com",
         'USER': os.environ['DBUSER'] + "@" + hostname,
         'PASSWORD': os.environ['DBPASS']

@@ -9,7 +9,7 @@ class Product(models.Model):
         (DRINKS, 'Getraenke'),
     ]
     title = models.CharField(max_length=220)
-    # for labeling 
+    # for labeling
     short_title = models.CharField(max_length=220)
     description = models.CharField(max_length=220)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
